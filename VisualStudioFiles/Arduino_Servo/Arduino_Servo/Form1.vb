@@ -21,6 +21,7 @@ Public Class Form1
     Dim pause_Clicked As Boolean = False
     Dim myName As String
     Dim LEVoice As String = "IVONA 2 Ivy OEM" 'Microsoft Anna OR IVONA 2 Ivy OEM
+    Dim currentThread As Thread
     'Dim promptBuilder As PromptBuilder
     'Dim returnValue As Prompt
 
@@ -129,7 +130,7 @@ Public Class Form1
             e.Handled = True
             Dim message As String
             message = TextBox1.Text
-            speaker.Rate = 0.2
+            speaker.Rate = -2
             speaker.Volume = 100
             speaker.SelectVoice(LEVoice)
             speaker.SpeakAsync(message)
@@ -567,7 +568,7 @@ Public Class Form1
         Timer3.Enabled = False
         speaker.Rate = -2
         speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
+        'speaker.SelectVoice(LEVoice)
         Dim string2say As String
         string2say = "Not great."
         speaker.SpeakAsync(string2say)
@@ -596,7 +597,7 @@ Public Class Form1
         Timer3.Enabled = False
         speaker.Rate = -2
         speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
+        'speaker.SelectVoice(LEVoice)
         Dim string2say As String
         string2say = "What did you do today?"
         speaker.SpeakAsync(string2say)
@@ -653,10 +654,13 @@ Public Class Form1
 
         speaker.Rate = -2
         speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
+        'speaker.SelectVoice(LEVoice)
 
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(2000)          'Hi L-E. How are you?
         SerialPort1.Open()
@@ -675,13 +679,10 @@ Public Class Form1
         Thread.Sleep(2750)          'That’s cool, what’s your favorite kind of cake?
         speaker.Speak(string2say5)  'Yeah, I played on the playground. The slide was very big.
         SerialPort1.Open()
-        SerialPort1.Write("A")      'head left
+        SerialPort1.Write("B")      'looks away
         SerialPort1.Close()
         SerialPort1.Open()
-        SerialPort1.Write("9")      'eyes left
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")      'eyes left
+        SerialPort1.Write("8")
         SerialPort1.Close()
         Thread.Sleep(3000)          'Oh, but what’s your favorite kind of cake?
         SerialPort1.Open()
@@ -691,7 +692,10 @@ Public Class Form1
         speaker.Speak(string2say6)  'Chocolate.
         Thread.Sleep(2000)          'Can I tell you about my weekend?
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(1000)          'pause to finish turning
         speaker.Speak(string2say7)  'Okay
@@ -704,16 +708,19 @@ Public Class Form1
         SerialPort1.Write("3")      'blinks
         SerialPort1.Close()
         SerialPort1.Open()
-        SerialPort1.Write("A")      'head left
+        SerialPort1.Write("B")      'looks away
         SerialPort1.Close()
         SerialPort1.Open()
-        SerialPort1.Write("9")      'eyes left 
+        SerialPort1.Write("8")      'looks away
         SerialPort1.Close()
         Thread.Sleep(800)           'pause for motors to finish
         speaker.Speak(string2say10) 'That's nice 
         Thread.Sleep(1800)          'Yeah. Do you like going to the beach?
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(500)           'pause to finish turning
         speaker.Speak(string2say11) 'Oh yeah. And this weekend, I saw a really cool car.
@@ -722,12 +729,12 @@ Public Class Form1
         Thread.Sleep(3000)          'Great. Maybe one day, we can take a trip to the beach together!
 
     End Sub
-    Dim Thread1 As New System.Threading.Thread(AddressOf Thread1Task)
     Private Sub Script1_Click(sender As Object, e As EventArgs) Handles Script1.Click
+        currentThread = New System.Threading.Thread(AddressOf Thread1Task)
         Timer1.Enabled = False
         Timer2.Enabled = False
         Timer3.Enabled = False
-        Thread1.Start()
+        currentThread.Start()
     End Sub
     Private Sub Thread2Task()
         Dim string2say As String = "I like to play Super Mario Bros."
@@ -746,10 +753,13 @@ Public Class Form1
 
         speaker.Rate = -2
         speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
+        'speaker.SelectVoice(LEVoice)
 
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(3000)          'What’s your favorite video game, L-E?
         speaker.Speak(string2say)   'I like to play Super Mario Bros.
@@ -761,15 +771,18 @@ Public Class Form1
         speaker.Speak(string2say4)  'I like him.
         Thread.Sleep(2000)          'Yes, why do you like him?
         SerialPort1.Open()
-        SerialPort1.Write("B")      'head right
+        SerialPort1.Write("B")      'looks away
         SerialPort1.Close()
         SerialPort1.Open()
-        SerialPort1.Write("8")      'eyes right
+        SerialPort1.Write("8")
         SerialPort1.Close()
         Thread.Sleep(1000)          'pause for motors 
         speaker.Speak(string2say5)  'My favorite color is green.
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(1150)          'Awesome.  My favorite color--
         speaker.Speak(string2say6)  'Oh yeah, in the Lego Game my character is also green.
@@ -781,11 +794,17 @@ Public Class Form1
         speaker.Speak(string2say7)  'Wow, we have the same favorite color.
         Thread.Sleep(4250)          'Yeah! So what else do you like to do when you’re not playing video games?
         SerialPort1.Open()
-        SerialPort1.Write("9")      'eyes left
+        SerialPort1.Write("B")      'looks away
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("8")
         SerialPort1.Close()
         speaker.Speak(string2say8)  'I like watching TV.
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(3000)          'Cool!  What's your favorite TV show? 
         speaker.Speak(string2say9)  'Phineas and Ferb.
@@ -799,12 +818,12 @@ Public Class Form1
         speaker.Speak(string2say13) 'I like to play with my toys.
         Thread.Sleep(3000)          'How nice! Toys are always fun!
     End Sub
-    Dim Thread2 As New System.Threading.Thread(AddressOf Thread2Task)
     Private Sub Script2_Click(sender As Object, e As EventArgs) Handles Script2.Click
+        currentThread = New System.Threading.Thread(AddressOf Thread2Task)
         Timer1.Enabled = False
         Timer2.Enabled = False
         Timer3.Enabled = False
-        Thread2.Start()
+        currentThread.Start()
     End Sub
     Private Sub Thread3Task()
         Dim string2say As String = " School is fun sometimes."
@@ -824,28 +843,34 @@ Public Class Form1
 
         speaker.Rate = -2
         speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
+        'speaker.SelectVoice(LEVoice)
 
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(1500)          'So how do you like school, L-E?
         SerialPort1.Open()
-        SerialPort1.Write("9")      'eyes left
+        SerialPort1.Write("B")      'looks away
         SerialPort1.Close()
         SerialPort1.Open()
-        SerialPort1.Write("A")      'head left
+        SerialPort1.Write("8")
         SerialPort1.Close()
-        Thread.Sleep(1000)           'pause for motors 
+        Thread.Sleep(1000)          'pause for motors 
         speaker.Speak(string2say)   'School is fun sometimes.
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(2000)          'Oh yeah?  What do you like to do at school?
         speaker.Speak(string2say2)  'I like recess.
         Thread.Sleep(1000)          'I love recess too. What's your fav--
         speaker.Speak(string2say3)  'I hate math.
-        Thread.Sleep(500)          'Why do you hate math?
+        Thread.Sleep(2000)           'Why do you hate math?
         speaker.Rate = -8
         speaker.Speak(string2say4)  'Uhh yeah.
         speaker.Rate = -2
@@ -854,16 +879,19 @@ Public Class Form1
         SerialPort1.Close()
         Thread.Sleep(1000)          'L-E? Why don't you like math?
         SerialPort1.Open()
-        SerialPort1.Write("8")      'eyes right
+        SerialPort1.Write("B")      'looks away
         SerialPort1.Close()
         SerialPort1.Open()
-        SerialPort1.Write("B")      'head right
+        SerialPort1.Write("8")
         SerialPort1.Close()
         Thread.Sleep(1000)          'pause for motors 
         speaker.Speak(string2say5)  'Math is boring.
         Thread.Sleep(1000)          'stay turned for a second
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(5750)          'Well that’s too bad.  I really liked math... (long pause) 
         speaker.Speak(string2say6)  'Yeah, well, I don't like doing math homework.
@@ -890,12 +918,12 @@ Public Class Form1
         SerialPort1.Close()
         Thread.Sleep(3000)          'No, I don't think so, L-E...  Maybe next time! 
     End Sub
-    Dim Thread3 As New System.Threading.Thread(AddressOf Thread3Task)
     Private Sub Script3_Click(sender As Object, e As EventArgs) Handles Script3.Click
+        currentThread = New System.Threading.Thread(AddressOf Thread3Task)
         Timer1.Enabled = False
         Timer2.Enabled = False
         Timer3.Enabled = False
-        Thread3.Start()
+        currentThread.Start()
     End Sub
     Private Sub Thread4Task()
         Dim string2say As String = "Yes. I would like to be a doctor one day."
@@ -912,10 +940,13 @@ Public Class Form1
 
         speaker.Rate = -2
         speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
+        'speaker.SelectVoice(LEVoice)
 
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(5000)          'So, L-E, do you have any idea what you want to be when you grow up?
         speaker.Speak(string2say)   'Yes. I would like to be a doctor one day.
@@ -925,16 +956,19 @@ Public Class Form1
         speaker.Speak(string2say3)  'I really like helping people and making them feel better.
         Thread.Sleep(5500)          'Yeah that’s nice, but I was wondering who got you that doctor kit... Do you know any doctors?
         SerialPort1.Open()
-        SerialPort1.Write("8")      'eyes right
+        SerialPort1.Write("B")      'looks away
         SerialPort1.Close()
         SerialPort1.Open()
-        SerialPort1.Write("B")      'head right
+        SerialPort1.Write("8")
         SerialPort1.Close()
         Thread.Sleep(1000)          'pause for motors
         speaker.Speak(string2say4)  'I have a friend who is a doctor. She’s awesome.
         Thread.Sleep(1000)          'pause in that position for a sec 
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(1500)          'That’s great! What kind of doctor is your friend?
         speaker.Speak(string2say5)  'A heart doctor.
@@ -946,11 +980,17 @@ Public Class Form1
         speaker.Speak(string2say8)  'Yeah.
         Thread.Sleep(1200)          'Yeah, why?
         SerialPort1.Open()
-        SerialPort1.Write("9")      'eyes left
+        SerialPort1.Write("B")      'looks away
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("8")
         SerialPort1.Close()
         speaker.Speak(string2say9)  'Because children are really cool.
         SerialPort1.Open()
-        SerialPort1.Write("2")      'neutral
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
         SerialPort1.Close()
         Thread.Sleep(3000)          'That is true! Do you like your doctor?
         speaker.Speak(string2say10) 'My friend has a cool model of a heart in her office, and once, she let me play with it!
@@ -962,12 +1002,74 @@ Public Class Form1
         speaker.Speak(string2say11) 'Yeah. He gives me lollipops. 
         Thread.Sleep(2000)          'Nice! I love lollipops! 
     End Sub
-    Dim Thread4 As New System.Threading.Thread(AddressOf Thread4Task)
     Private Sub Script4_Click(sender As Object, e As EventArgs) Handles Script4.Click
+        currentThread = New System.Threading.Thread(AddressOf Thread4Task)
         Timer1.Enabled = False
         Timer2.Enabled = False
         Timer3.Enabled = False
-        Thread4.Start()
+        currentThread.Start()
+    End Sub
+    Sub Thread5Task()
+        Dim string2say As String = "Hello."
+        Dim string2say2 As String = "I hate roller coasters"
+        Dim string2say3 As String = "I like chocolate cake"
+        Dim string2say4 As String = "I especially like chocolate cake with peanut butter frosting"
+        Dim string2say5 As String = "Yeah. Peanut butter is the best!"
+        Dim string2say6 As String = "Yeah"
+        Dim string2say7 As String = "Yes, PB&J sandwiches are my favorite kind of lunch"
+        Dim string2say8 As String = "And Peanut butter cups are my favorite chocolate"
+        Dim string2say9 As String = "That's interesting"
+
+        speaker.Rate = -2
+        speaker.Volume = 100
+        'speaker.SelectVoice(LEVoice)
+
+        SerialPort1.Open()
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
+        SerialPort1.Close()
+        Thread.Sleep(1000)          'Hi L-E. 
+        speaker.Speak(string2say)   'Hello
+        Thread.Sleep(2000)          'What's your favorite kind of food?
+        speaker.Speak(string2say2)  'I hate roller coasters
+        Thread.Sleep(4250)          'Oh, I don't like them either, but I was asking about your favorite kind of food
+        speaker.Speak(string2say3)  'I like chocolate cake
+        Thread.Sleep(1750)          'Oh, wow! Me too!
+        SerialPort1.Open()
+        SerialPort1.Write("B")      'looks away
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("8")
+        SerialPort1.Close()
+        Thread.Sleep(1000)          'pause for motors
+        speaker.Speak(string2say4)  'I espeecially like chocolate cake with peanut butter frosting
+        Thread.Sleep(1000)          'pause in that position for a sec
+        SerialPort1.Open()
+        SerialPort1.Write("A")      'turns to speaker
+        SerialPort1.Close()
+        SerialPort1.Open()
+        SerialPort1.Write("9")
+        SerialPort1.Close()
+        Thread.Sleep(2000)          'That sounds really good.  Do you love peanut butter?
+        speaker.Speak(string2say5)  'Yeah, peanut butter is the best!
+        Thread.Sleep(3000)          'I see! What do you like eating peanut butter with?
+        speaker.Speak(string2say6)  'Yeah.
+        Thread.Sleep(6500)          'So do you eat peanut butter in sandwiches?... (long pause)
+        speaker.Speak(string2say7)  'Yes, PB&J sandwiches are my favorite kind of lunch
+        Thread.Sleep(1000)          'Nice. I like--
+        speaker.Speak(string2say8)  'Peanut butter cups are my favorite chocolate!
+        Thread.Sleep(5000)          'That's nice, L-E. I was just saying that I like to eat peanut butter sandwiches with bananas.
+        speaker.Speak(string2say9)  'That's interesting
+        Thread.Sleep(500)           'Yup!
+    End Sub
+    Private Sub Demo_Click(sender As Object, e As EventArgs) Handles Demo.Click
+        currentThread = New System.Threading.Thread(AddressOf Thread5Task)
+        Timer1.Enabled = False
+        Timer2.Enabled = False
+        Timer3.Enabled = False
+        currentThread.Start()
     End Sub
 #End Region
 
@@ -1346,7 +1448,7 @@ Public Class Form1
         speaker.Volume = 100
         speaker.SelectVoice(LEVoice)
         Dim string2say As String
-        string2say = "I always make sandcastles when I go to the beach.  I'm a pro at a making sandcastles!"
+        string2say = "I always make sand castles when I go to the beach.  I'm a pro at a making sand castles!"
         speaker.SpeakAsync(string2say)
         Timer1.Enabled = True
         Timer2.Enabled = True
@@ -1682,23 +1784,27 @@ Public Class Form1
 
 #Region "Speech Controls"
     Private Sub StopButton_Click(sender As Object, e As EventArgs) Handles StopButton.Click
-        If Thread1.IsAlive Then
-            pause_Clicked = False
-            Thread1.Abort()
-        End If
-        If Thread2.IsAlive Then
-            pause_Clicked = False
-            Thread2.Abort()
-        End If
-        If Thread3.IsAlive Then
-            pause_Clicked = False
-            Thread3.Abort()
-        End If
-        If Thread4.IsAlive Then
-            pause_Clicked = False
-            Thread4.Abort()
-        End If
+        Try
+            If currentThread.IsAlive Then
+                Try
+                    currentThread.Abort()
+                Catch ex As ThreadStateException
+                    currentThread.Resume()
+                End Try
+            End If
+        Catch ex As Exception
+
+        End Try
         stop_Clicked = True
+        Select Case speaker.State
+            Case SynthesizerState.Speaking
+                speaker.SpeakAsyncCancelAll()
+                Exit Select
+            Case SynthesizerState.Paused
+                speaker.Resume()
+                speaker.SpeakAsyncCancelAll()
+                Exit Select
+        End Select
         speaker.SpeakAsyncCancelAll()
         SerialPort1.Open()
         SerialPort1.Write("AA")
@@ -1709,51 +1815,40 @@ Public Class Form1
     End Sub
 
     Private Sub Pause_Click(sender As Object, e As EventArgs) Handles Pause.Click
-        pause_Clicked = True
-        If Thread1.IsAlive Then
-            Thread1.Suspend()
-        End If
-        If Thread2.IsAlive Then
-            Thread2.Suspend()
-        End If
-        If Thread3.IsAlive Then
-            Thread3.Suspend()
-        End If
-        If Thread4.IsAlive Then
-            Thread4.Suspend()
-        End If
+        Try
+            If currentThread.IsAlive Then
+                currentThread.Suspend()
+            End If
+        Catch ex As Exception
+            Exit Try
+        End Try
         Timer1.Enabled = False
         Timer2.Enabled = False
         Timer3.Enabled = False
-        speaker.Pause()
+        Select Case speaker.State
+            Case SynthesizerState.Speaking
+                speaker.Pause()
+                Exit Select
+        End Select
     End Sub
 
     Private Sub ResumeButton_Click(sender As Object, e As EventArgs) Handles ResumeButton.Click
-        If Thread1.IsAlive Then
-            If pause_Clicked Then           'so doesn't crash when Resume is clicked when Pause has not been clicked
-                pause_Clicked = False       'resets pause_Clicked
-                Thread1.Resume()
+        Try
+            If currentThread.IsAlive Then
+                Try
+                    currentThread.Resume()
+                Catch ex As ThreadStateException
+                    Exit Try
+                End Try
             End If
-        End If
-        If Thread2.IsAlive Then
-            If pause_Clicked Then
-                pause_Clicked = False
-                Thread2.Resume()
-            End If
-        End If
-        If Thread3.IsAlive Then
-            If pause_Clicked Then
-                pause_Clicked = False
-                Thread3.Resume()
-            End If
-        End If
-        If Thread4.IsAlive Then
-            If pause_Clicked Then
-                pause_Clicked = False
-                Thread4.Resume()
-            End If
-        End If
-        speaker.Resume()
+        Catch ex As NullReferenceException
+            Exit Try
+        End Try
+        Select Case speaker.State
+            Case SynthesizerState.Paused
+                speaker.Resume()
+                Exit Select 
+        End Select
         Timer1.Enabled = True
         Timer2.Enabled = True
         Timer3.Enabled = True
@@ -1780,7 +1875,7 @@ Public Class Form1
         Timer2.Enabled = False
         Timer3.Enabled = False
         Dim string2say As String
-        string2say = "Hi, my name is L-E"
+        string2say = "Hi, my name is L-E. What's your name?"
         speaker.Rate = -2
         speaker.Volume = 100
         speaker.SelectVoice(LEVoice)
@@ -1886,7 +1981,7 @@ Public Class Form1
         Timer1.Enabled = False
         Timer2.Enabled = False
         Timer3.Enabled = False
-        speaker.Rate = -2
+        speaker.Rate = -3
         speaker.Volume = 100
         speaker.SelectVoice(LEVoice)
         Dim string2say As String
@@ -1898,7 +1993,7 @@ Public Class Form1
         Timer1.Enabled = False
         Timer2.Enabled = False
         Timer3.Enabled = False
-        speaker.Rate = -2
+        speaker.Rate = -3
         speaker.Volume = 100
         speaker.SelectVoice(LEVoice)
         Dim string2say As String
