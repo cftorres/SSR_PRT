@@ -1,17 +1,17 @@
 ﻿'created by Rui Santos, http://randomnerdtutorials.wordpress.com, 2013
 'modified by Laura Boccanfuso, Lisa Chen and Colette Torres 6/2015
 'Control a servo motor with Visual Basic 
-
-Imports System.Speech.Synthesis
+Imports System.Globalization
 Imports System.IO
 Imports System.IO.Ports
+Imports System.Security.Cryptography.X509Certificates
+Imports System.Speech.Synthesis
+Imports System.Text
 Imports System.Threading
 Imports Fleck
-Imports System.Security.Cryptography.X509Certificates
-Imports System.Speech.Recognition
+Imports Microsoft.VisualBasic.FileIO
 
 Public Class Form1
-
     Shared _continue As Boolean
     Shared _serialPort As SerialPort
     WithEvents speaker As New SpeechSynthesizer()
@@ -20,14 +20,22 @@ Public Class Form1
     Dim stop_Clicked As Boolean = False
     Dim pause_Clicked As Boolean = False
     Dim myName As String
-    Dim LEVoice As String = "IVONA 2 Ivy OEM" 'Microsoft Anna OR IVONA 2 Ivy OEM
+    Dim failedToConnect As Boolean
+    ReadOnly LEVoice As String = "IVONA 2 Ivy OEM" 'Microsoft Anna OR IVONA 2 Ivy OEM
     Dim currentThread As Thread
-    'Dim promptBuilder As PromptBuilder
-    'Dim returnValue As Prompt
 
-    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         '#JC Init the Speech Recognition
         InitSpeechRecoginition()
+
+        'Setup Voice
+        speaker.Rate = -2
+        speaker.Volume = 100
+        Try
+            speaker.SelectVoice(LEVoice)
+        Catch ex As Exception
+
+        End Try
 
         SerialPort1.Close()
         SerialPort1.PortName = "COM6" 'define your port
@@ -36,20 +44,22 @@ Public Class Form1
         SerialPort1.Parity = Parity.None
         SerialPort1.StopBits = StopBits.One
         SerialPort1.Handshake = Handshake.None
-        SerialPort1.Encoding = System.Text.Encoding.Default
+        SerialPort1.Encoding = Encoding.Default
         Thread.Sleep(1000)
-        SerialPort1.Open()
-        SerialPort1.Write("2")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
-
-
+        Try
+            SendCommand("2")
+        Catch ex As Exception
+            If (ex.ToString.Contains("does not exist")) Then
+                MsgBox(
+                    "Failed to connect to serial port. Please make sure L-E is plugged in and the arduino code has been uploaded.")
+                failedToConnect = True
+            End If
+        End Try
+        EnableTimers()
     End Sub
 
-    Private Sub speaker_VisemeReached(sender As Object, e2 As System.Speech.Synthesis.VisemeReachedEventArgs) Handles speaker.VisemeReached
-        Console.WriteLine("Viseme " & e2.Viseme & " was " & e2.Duration.TotalMilliseconds.ToString & " ms. long" & vbNewLine)
+    Private Sub speaker_VisemeReached(sender As Object, e2 As VisemeReachedEventArgs) Handles speaker.VisemeReached
+        'Console.WriteLine("Viseme " & e2.Viseme & " was " & e2.Duration.TotalMilliseconds.ToString & " ms. long" & vbNewLine)
 
         '0:      silence()
         '1:      ae, ax, ah
@@ -75,1161 +85,624 @@ Public Class Form1
         '21:     p, b, m
         Try
             If (e2.Viseme = 1 Or e2.Viseme = 2 Or e2.Viseme = 9 Or e2.Viseme = 8) Then
-                SerialPort1.Open()
-                SerialPort1.Write("4")
-                SerialPort1.Close()
+                SendCommand("4")
             ElseIf (e2.Viseme = 3 Or e2.Viseme = 6 Or e2.Viseme = 10) Then
-                SerialPort1.Open()
-                SerialPort1.Write("5")
-                SerialPort1.Close()
+                SendCommand("5")
             ElseIf (e2.Viseme = 4 Or e2.Viseme = 5 Or e2.Viseme = 7 Or e2.Viseme = 20) Then
-                SerialPort1.Open()
-                SerialPort1.Write("6")
-                SerialPort1.Close()
+                SendCommand("6")
             Else
-                SerialPort1.Open()
-                SerialPort1.Write("7")
-                SerialPort1.Close()
+                SendCommand("7")
             End If
         Catch e As Exception
-            Console.WriteLine("exception caught")
+            'Console.WriteLine("exception caught")
         End Try
-
-
-
-
     End Sub
-    Private Sub speaker_SpeakCompleted(sender As Object, e2 As System.Speech.Synthesis.SpeakCompletedEventArgs) Handles speaker.SpeakCompleted
+
+    Private Sub speaker_SpeakCompleted(sender As Object, e2 As SpeakCompletedEventArgs) Handles speaker.SpeakCompleted
         If (stop_Clicked = True) Then
             Return
         Else
-            Timer1.Enabled = True
-            Timer2.Enabled = True
-            Timer3.Enabled = True
+            EnableTimers()
         End If
     End Sub
 
-    Private Sub NameBox_KeyPress(sender As Object, e As System.Windows.Forms.KeyPressEventArgs) Handles NameBox.KeyPress
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+    Private Sub NameBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles NameBox.KeyPress
+        DisableTimers()
         If Asc(e.KeyChar) = 13 Then
             e.Handled = True
             myName = NameBox.Text
         End If
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
 
-    Private Sub TextBox1_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox1.KeyPress
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+    Private Sub TextBox1_KeyDown(sender As Object, e As KeyPressEventArgs) Handles TextBox1.KeyPress
+        DisableTimers()
         If Asc(e.KeyChar) = 13 Then
             e.Handled = True
-            Dim message As String
-            message = TextBox1.Text
-            speaker.Rate = -2
-            speaker.Volume = 100
-            speaker.SelectVoice(LEVoice)
-            speaker.SpeakAsync(message)
-            TextBox1.Clear()
+            SpeakString(TextBox1.Text)
         End If
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
+
     Private Sub Clear_Click(sender As Object, e As EventArgs) Handles Clear.Click
         TextBox1.Clear()
     End Sub
 
 #Region "Faces"
-    Private Sub neutral_Click(sender As System.Object, e As System.EventArgs) Handles neutral.Click, Timer3.Tick
-        SerialPort1.Open()
-        SerialPort1.Write("2")
-        SerialPort1.Close()
+
+    Private Sub neutral_Click(sender As Object, e As EventArgs) Handles neutral.Click, Timer3.Tick
+        SendCommand("2")
     End Sub
 
     Private Sub smile_Click_1(sender As Object, e As EventArgs) Handles smile.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("0")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("0", True)
     End Sub
 
     Private Sub sad_Click(sender As Object, e As EventArgs) Handles frown.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("1")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("1", True)
     End Sub
+
     Private Sub Confused_Click(sender As Object, e As EventArgs) Handles Confused.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("F")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("F", True)
     End Sub
 
     Private Sub Surprised_Click(sender As Object, e As EventArgs) Handles Surprised.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("G")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("G", True)
     End Sub
 
     Private Sub Angry_Click(sender As Object, e As EventArgs) Handles Angry.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("H")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("H", True)
     End Sub
 
     Private Sub CrossEyed_Click(sender As Object, e As EventArgs) Handles CrossEyed.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("I")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("I", True)
     End Sub
 
     Private Sub Awkward_Click(sender As Object, e As EventArgs) Handles Awkward.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("J")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("J", True)
     End Sub
 
     Private Sub FunnyFace1_Click(sender As Object, e As EventArgs) Handles FunnyFace1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("K")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("K", True)
     End Sub
 
     Private Sub Afraid_Click(sender As Object, e As EventArgs) Handles Afraid.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("L")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("L", True)
     End Sub
 
     Private Sub Sleepy_Click(sender As Object, e As EventArgs) Handles Sleepy.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("M")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("M", True)
     End Sub
 
     Private Sub Yelling_Click(sender As Object, e As EventArgs) Handles Yelling.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("N")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("N", True)
     End Sub
+
     Private Sub Animated_Click(sender As Object, e As EventArgs) Handles Animated.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("R")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("R", True)
     End Sub
 
     Private Sub Funny2_Click(sender As Object, e As EventArgs) Handles Funny2.Click
-        SerialPort1.Open()
-        SerialPort1.Write("Q")
-        SerialPort1.Close()
+        SendCommand("Q")
     End Sub
+
 #End Region
 
 #Region "Actions/Body Positions"
+
     Private Sub blink_Click(sender As Object, e As EventArgs) Handles blink.Click, Timer1.Tick
-        SerialPort1.Open()
-        SerialPort1.Write("3")
-        SerialPort1.Close()
+        SendCommand("3")
     End Sub
+
     Private Sub EyeRight_Click(sender As Object, e As EventArgs) Handles EyeRight.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("8", True)
         EyeRight.BackColor = Color.Gold
     End Sub
 
     Private Sub EyeLeft_Click(sender As Object, e As EventArgs) Handles EyeLeft.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("9", True)
         EyeLeft.BackColor = Color.Gold
     End Sub
 
     Private Sub HeadLeft_Click(sender As Object, e As EventArgs) Handles HeadLeft.Click, Timer2.Tick
-        SerialPort1.Open()
-        SerialPort1.Write("A")
-        SerialPort1.Close()
+        SendCommand("A")
         HeadLeft.BackColor = Color.Gold
     End Sub
 
     Private Sub HeadRight_Click(sender As Object, e As EventArgs) Handles HeadRight.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("B")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("B", True)
         HeadRight.BackColor = Color.Gold
     End Sub
+
     Private Sub HeadUp_Click(sender As Object, e As EventArgs) Handles HeadUp.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("C")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("C", True)
         HeadUp.BackColor = Color.Gold
     End Sub
 
     Private Sub HeadDown_Click(sender As Object, e As EventArgs) Handles HeadDown.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("D")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("D", True)
         HeadUp.BackColor = Color.Gold
     End Sub
 
     Private Sub Wink_Click(sender As Object, e As EventArgs) Handles Wink.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        SerialPort1.Open()
-        SerialPort1.Write("E")
-        SerialPort1.Close()
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SendCommand("E", True)
     End Sub
+
 #End Region
 
 #Region "One-Worders"
+
     Private Sub Oh_Click(sender As Object, e As EventArgs) Handles Oh.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Oh"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Oh", -2, 100, True)
         Oh.BackColor = Color.Gold
     End Sub
 
     Private Sub Okay_Click(sender As Object, e As EventArgs) Handles Okay.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Okay..."
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Okay...", -2, 100, True)
         Okay.BackColor = Color.Gold
     End Sub
 
     Private Sub Wow_Click(sender As Object, e As EventArgs) Handles Wow.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Wow."
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Wow.", -2, 100, True)
         Wow.BackColor = Color.Gold
     End Sub
 
     Private Sub Interesting_Click(sender As Object, e As EventArgs) Handles Interesting.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Interesting....."
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Interesting.....", -2, 100, True)
+        EnableTimers()
         Interesting.BackColor = Color.Gold
     End Sub
 
     Private Sub Cool_Click(sender As Object, e As EventArgs) Handles Cool.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Cool"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Cool", -2, 100, True)
         Cool.BackColor = Color.Gold
     End Sub
+
     Private Sub Nice_Click(sender As Object, e As EventArgs) Handles Nice.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Nice"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Nice", -2, 100, True)
         Nice.BackColor = Color.Gold
     End Sub
+
     Private Sub Yeah_Click(sender As Object, e As EventArgs) Handles Yeah.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Yeah"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Yeah", -2, 100, True)
         Yeah.BackColor = Color.Gold
     End Sub
+
     Private Sub Uhuh_Click(sender As Object, e As EventArgs) Handles Uhuh.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Uhhhhh huh...."
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Uhhhhh huh....", -2, 100, True)
         Uhuh.BackColor = Color.Gold
     End Sub
+
 #End Region
 
 #Region "Small Talk"
+
     Private Sub HowAreYou_Click(sender As Object, e As EventArgs) Handles HowAreYou.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "How are you?"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("How are you?", -2, 100, True)
     End Sub
+
     Private Sub ImGood_Click(sender As Object, e As EventArgs) Handles ImGood.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I'm good"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I'm good", -2, 100, True)
     End Sub
 
     Private Sub ImOkay_Click(sender As Object, e As EventArgs) Handles ImOkay.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I'm okay"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I'm okay", -2, 100, True)
     End Sub
 
     Private Sub NotGreat_Click(sender As Object, e As EventArgs) Handles NotGreat.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        'speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Not great."
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Not great.", -2, 100, True)
     End Sub
 
     Private Sub NotGreatCont_Click(sender As Object, e As EventArgs) Handles NotGreatCont.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I had too much math homework and I couldn't figure out a bunch of the problems"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I had too much math homework and I couldn't figure out a bunch of the problems", -2, 100, True)
     End Sub
+
     Private Sub TodayQ_Click(sender As Object, e As EventArgs) Handles TodayQ.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        'speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "What did you do today?"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("What did you do today?", -2, 100, True)
     End Sub
 
     Private Sub TodayA_Click(sender As Object, e As EventArgs) Handles TodayA.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Today, I went to the park"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Today, I went to the park", -2, 100, True)
     End Sub
 
     Private Sub TodayACont_Click(sender As Object, e As EventArgs) Handles TodayACont.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "There was some really cool music playing in the park"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("There was some really cool music playing in the park", -2, 100, True)
     End Sub
+
 #End Region
 
 #Region "Scripts"
+
     Sub Thread1Task()
-        Dim string2say As String = "Hello. I’m good."
-        Dim string2say2 As String = "I went to my friend’s birthday party."
-        Dim string2say3 As String = "Yeah."
-        Dim string2say4 As String = "I went to a pool party and I swam and I ate pizza and cake."
-        Dim string2say5 As String = "Yeah. I played on the playground. The slide was very big."
-        Dim string2say6 As String = "Chocolate."
-        Dim string2say7 As String = "Okay."
-        Dim string2say8 As String = "Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball."
-        Dim string2say9 As String = "Okay."
-        Dim string2say10 As String = "That's nice"
-        Dim string2say11 As String = "Oh yeah. And this weekend, I saw a really cool car."
-        Dim string2say12 As String = "Yes."
+        Dim string2say = "Hello. I’m good."
+        Dim string2say2 = "I went to my friend’s birthday party."
+        Dim string2say3 = "Yeah."
+        Dim string2say4 = "I went to a pool party and I swam and I ate pizza and cake."
+        Dim string2say5 = "Yeah. I played on the playground. The slide was very big."
+        Dim string2say6 = "Chocolate."
+        Dim string2say7 = "Okay."
+        Dim string2say8 =
+                "Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball."
+        Dim string2say9 = "Okay."
+        Dim string2say10 = "That's nice"
+        Dim string2say11 = "Oh yeah. And this weekend, I saw a really cool car."
+        Dim string2say12 = "Yes."
 
-        speaker.Rate = -2
-        speaker.Volume = 100
-        'speaker.SelectVoice(LEVoice)
-
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(2000)          'Hi L-E. How are you?
-        SerialPort1.Open()
-        SerialPort1.Write("0")      'smiles
-        SerialPort1.Close()
-        speaker.Speak(string2say)   'Hello. I'm good.
+        SendCommand("0")      'smiles
+        SpeakString(string2say)   'Hello. I'm good.
         Thread.Sleep(1700)          'What did you do this weekend? 
-        speaker.Speak(string2say2)  'I went to my friend’s birthday party.
+        SpeakString(string2say2)  'I went to my friend’s birthday party.
         Thread.Sleep(3250)          'Oh yeah? Was it fun? What did you do?
-        SerialPort1.Open()
-        SerialPort1.Write("3")      'blinks
-        SerialPort1.Close()
-        speaker.Speak(string2say3)  'Yeah
+        SendCommand("3")      'blinks
+        SpeakString(string2say3)  'Yeah
         Thread.Sleep(6000)          'So what did you do at the party? (long pause)... L-E?
-        speaker.Speak(string2say4)  'I went to a pool party and I swam and I ate pizza and cake.
+        SpeakString(string2say4)  'I went to a pool party and I swam and I ate pizza and cake.
         Thread.Sleep(2750)          'That’s cool, what’s your favorite kind of cake?
-        speaker.Speak(string2say5)  'Yeah, I played on the playground. The slide was very big.
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
+        SpeakString(string2say5)  'Yeah, I played on the playground. The slide was very big.
+        SendCommand("B")      'looks away
+        SendCommand("8")
         Thread.Sleep(3000)          'Oh, but what’s your favorite kind of cake?
-        SerialPort1.Open()
-        SerialPort1.Write("3")      'blinks
-        SerialPort1.Close()
+        SendCommand("3")      'blinks
         Thread.Sleep(500)           'pause to finish blinking
-        speaker.Speak(string2say6)  'Chocolate.
+        SpeakString(string2say6)  'Chocolate.
         Thread.Sleep(2000)          'Can I tell you about my weekend?
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(1000)          'pause to finish turning
-        speaker.Speak(string2say7)  'Okay
+        SpeakString(string2say7)  'Okay
         Thread.Sleep(500)           'I went to the--
-        speaker.Speak(string2say8)  'Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball.
+        SpeakString(string2say8) _
+        'Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball.
         Thread.Sleep(4000)          'That’s very nice, L-E. Can I finish telling you about my weekend?
-        speaker.Speak(string2say9)  'Okay
+        SpeakString(string2say9)  'Okay
         Thread.Sleep(4250)          'I went to the beach, and I fed seagulls and found some really pretty seashells.
-        SerialPort1.Open()
-        SerialPort1.Write("3")      'blinks
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")      'looks away
-        SerialPort1.Close()
+        SendCommand("3")      'blinks
+        SendCommand("B")      'looks away
+        SendCommand("8")      'looks away
         Thread.Sleep(800)           'pause for motors to finish
-        speaker.Speak(string2say10) 'That's nice 
+        SpeakString(string2say10) 'That's nice 
         Thread.Sleep(1800)          'Yeah. Do you like going to the beach?
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(500)           'pause to finish turning
-        speaker.Speak(string2say11) 'Oh yeah. And this weekend, I saw a really cool car.
+        SpeakString(string2say11) 'Oh yeah. And this weekend, I saw a really cool car.
         Thread.Sleep(4250)          'Oh, that’s fun.  But I was asking if you like the beach…
-        speaker.Speak(string2say12) 'Yes
+        SpeakString(string2say12) 'Yes
         Thread.Sleep(3000)          'Great. Maybe one day, we can take a trip to the beach together!
-
     End Sub
+
     Private Sub Script1_Click(sender As Object, e As EventArgs) Handles Script1.Click
-        currentThread = New System.Threading.Thread(AddressOf Thread1Task)
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        currentThread = New Thread(AddressOf Thread1Task)
+        DisableTimers()
         currentThread.Start()
     End Sub
+
     Private Sub Thread2Task()
-        Dim string2say As String = "I like to play Super Mario Bros."
-        Dim string2say2 As String = "I also like this cool Lego game."
-        Dim string2say3 As String = "Luigi."
-        Dim string2say4 As String = "I like him."
-        Dim string2say5 As String = "My favorite color is green."
-        Dim string2say6 As String = "Oh yeah, in the Lego Game my character is also green."
-        Dim string2say7 As String = "Wow, we have the same favorite color."
-        Dim string2say8 As String = "I like watching TV"
-        Dim string2say9 As String = "Phineas and Ferb"
-        Dim string2say10 As String = "Yeah"
-        Dim string2say11 As String = "Summer is the best time of the year."
-        Dim string2say12 As String = "Oh yeah.  I also really like the movie Despicable Me"
-        Dim string2say13 As String = "I like to play with my toys"
+        Dim string2say = "I like to play Super Mario Bros."
+        Dim string2say2 = "I also like this cool Lego game."
+        Dim string2say3 = "Luigi."
+        Dim string2say4 = "I like him."
+        Dim string2say5 = "My favorite color is green."
+        Dim string2say6 = "Oh yeah, in the Lego Game my character is also green."
+        Dim string2say7 = "Wow, we have the same favorite color."
+        Dim string2say8 = "I like watching TV"
+        Dim string2say9 = "Phineas and Ferb"
+        Dim string2say10 = "Yeah"
+        Dim string2say11 = "Summer is the best time of the year."
+        Dim string2say12 = "Oh yeah.  I also really like the movie Despicable Me"
+        Dim string2say13 = "I like to play with my toys"
 
-        speaker.Rate = -2
-        speaker.Volume = 100
-        'speaker.SelectVoice(LEVoice)
-
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(3000)          'What’s your favorite video game, L-E?
-        speaker.Speak(string2say)   'I like to play Super Mario Bros.
+        SpeakString(string2say)   'I like to play Super Mario Bros.
         Thread.Sleep(2500)          'How cool!  Who’s your favorite character?
-        speaker.Speak(string2say2)  'I also like this cool Lego game.
+        SpeakString(string2say2)  'I also like this cool Lego game.
         Thread.Sleep(3500)          'That’s nice, but who’s your favorite character in Mario Bros?
-        speaker.Speak(string2say3)  'Luigi.
+        SpeakString(string2say3)  'Luigi.
         Thread.Sleep(2750)          'I see.  And why is he your favorite?
-        speaker.Speak(string2say4)  'I like him.
+        SpeakString(string2say4)  'I like him.
         Thread.Sleep(2000)          'Yes, why do you like him?
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
+        SendCommand("B")      'looks away
+        SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        speaker.Speak(string2say5)  'My favorite color is green.
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SpeakString(string2say5)  'My favorite color is green.
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(1150)          'Awesome.  My favorite color--
-        speaker.Speak(string2say6)  'Oh yeah, in the Lego Game my character is also green.
-        Thread.Sleep(7000)          'That’s nice, L-E.  I was just saying that my favorite color is also green... (long pause)
-        SerialPort1.Open()
-        SerialPort1.Write("3")      'blink eyes
-        SerialPort1.Close()
+        SpeakString(string2say6)  'Oh yeah, in the Lego Game my character is also green.
+        Thread.Sleep(7000) _
+        'That’s nice, L-E.  I was just saying that my favorite color is also green... (long pause)
+        SendCommand("3")      'blink eyes
         Thread.Sleep(600)           'pause for motors 
-        speaker.Speak(string2say7)  'Wow, we have the same favorite color.
+        SpeakString(string2say7)  'Wow, we have the same favorite color.
         Thread.Sleep(4250)          'Yeah! So what else do you like to do when you’re not playing video games?
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
-        speaker.Speak(string2say8)  'I like watching TV.
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("B")      'looks away
+        SendCommand("8")
+        SpeakString(string2say8)  'I like watching TV.
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(3000)          'Cool!  What's your favorite TV show? 
-        speaker.Speak(string2say9)  'Phineas and Ferb.
+        SpeakString(string2say9)  'Phineas and Ferb.
         Thread.Sleep(1750)          'Oh yeah? Why is that?           
-        speaker.Speak(string2say10) 'Yeah.
+        SpeakString(string2say10) 'Yeah.
         Thread.Sleep(2000)          'Why do you like that show, L-E?
-        speaker.Speak(string2say11) 'Summer is the best time of the year.
+        SpeakString(string2say11) 'Summer is the best time of the year.
         Thread.Sleep(4250)          'I agree! Do you ever do cool things like Phineas and Ferb over the summer?
-        speaker.Speak(string2say12) 'Oh yeah.  I also really like the movie “Despicable Me”
-        Thread.Sleep(6000)          'That’s nice, L-E.  I just saw that movie too, but I was just asking you what you do in the summer…
-        speaker.Speak(string2say13) 'I like to play with my toys.
+        SpeakString(string2say12) 'Oh yeah.  I also really like the movie “Despicable Me”
+        Thread.Sleep(6000) _
+        'That’s nice, L-E.  I just saw that movie too, but I was just asking you what you do in the summer…
+        SpeakString(string2say13) 'I like to play with my toys.
         Thread.Sleep(3000)          'How nice! Toys are always fun!
     End Sub
+
     Private Sub Script2_Click(sender As Object, e As EventArgs) Handles Script2.Click
-        currentThread = New System.Threading.Thread(AddressOf Thread2Task)
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        currentThread = New Thread(AddressOf Thread2Task)
+        DisableTimers()
         currentThread.Start()
     End Sub
+
     Private Sub Thread3Task()
-        Dim string2say As String = " School is fun sometimes."
-        Dim string2say2 As String = "I like recess. "
-        Dim string2say3 As String = "I hate math."
-        Dim string2say4 As String = "Uh yeah."
-        Dim string2say5 As String = "Math is boring."
-        Dim string2say6 As String = "Yeah, well... I don't like doing math homework"
-        Dim string2say7 As String = "Yeah"
-        Dim string2say8 As String = "I like her a lot. She’s my favorite teacher so far."
-        Dim string2say9 As String = "Mrs. Peterson. She gives me a lot of stickers."
-        Dim string2say10 As String = "Once, Mrs. Peterson made cookies for the class."
-        Dim string2say11 As String = " I like the scratch and sniff stickers."
-        Dim string2say12 As String = "Do you love cookies? I love cookies!"
-        Dim string2say13 As String = "Does that mean we can have some now?"
+        Dim string2say = " School is fun sometimes."
+        Dim string2say2 = "I like recess. "
+        Dim string2say3 = "I hate math."
+        Dim string2say4 = "Uh yeah."
+        Dim string2say5 = "Math is boring."
+        Dim string2say6 = "Yeah, well... I don't like doing math homework"
+        Dim string2say7 = "Yeah"
+        Dim string2say8 = "I like her a lot. She’s my favorite teacher so far."
+        Dim string2say9 = "Mrs. Peterson. She gives me a lot of stickers."
+        Dim string2say10 = "Once, Mrs. Peterson made cookies for the class."
+        Dim string2say11 = " I like the scratch and sniff stickers."
+        Dim string2say12 = "Do you love cookies? I love cookies!"
+        Dim string2say13 = "Does that mean we can have some now?"
 
-
-        speaker.Rate = -2
-        speaker.Volume = 100
-        'speaker.SelectVoice(LEVoice)
-
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(1500)          'So how do you like school, L-E?
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
+        SendCommand("B")      'looks away
+        SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        speaker.Speak(string2say)   'School is fun sometimes.
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SpeakString(string2say)   'School is fun sometimes.
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(2000)          'Oh yeah?  What do you like to do at school?
-        speaker.Speak(string2say2)  'I like recess.
+        SpeakString(string2say2)  'I like recess.
         Thread.Sleep(1000)          'I love recess too. What's your fav--
-        speaker.Speak(string2say3)  'I hate math.
+        SpeakString(string2say3)  'I hate math.
         Thread.Sleep(2000)           'Why do you hate math?
         speaker.Rate = -8
-        speaker.Speak(string2say4)  'Uhh yeah.
+        SpeakString(string2say4)  'Uhh yeah.
         speaker.Rate = -2
-        SerialPort1.Open()
-        SerialPort1.Write("3")      'blink
-        SerialPort1.Close()
+        SendCommand("3")      'blink
         Thread.Sleep(1000)          'L-E? Why don't you like math?
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
+        SendCommand("B")      'looks away
+        SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        speaker.Speak(string2say5)  'Math is boring.
+        SpeakString(string2say5)  'Math is boring.
         Thread.Sleep(1000)          'stay turned for a second
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(5750)          'Well that’s too bad.  I really liked math... (long pause) 
-        speaker.Speak(string2say6)  'Yeah, well, I don't like doing math homework.
+        SpeakString(string2say6)  'Yeah, well, I don't like doing math homework.
         Thread.Sleep(2000)          'Well how do you like your teacher?
-        SerialPort1.Open()
-        SerialPort1.Write("3")      'blink
-        SerialPort1.Close()
+        SendCommand("3")      'blink
         Thread.Sleep(600)           'pause for motors 
-        speaker.Speak(string2say7)  'Yeah
+        SpeakString(string2say7)  'Yeah
         Thread.Sleep(4750)          'Yeah, you like her? Can you tell me a bit more about your teacher?
-        speaker.Speak(string2say8)  'I like her a lot. She’s my favorite teacher so far.
+        SpeakString(string2say8)  'I like her a lot. She’s my favorite teacher so far.
         Thread.Sleep(2600)          'That's great.  What's her name?
-        speaker.Speak(string2say9)  'Mrs. Peterson. She gives me a lot of stickers.
+        SpeakString(string2say9)  'Mrs. Peterson. She gives me a lot of stickers.
         Thread.Sleep(2500)          'Oh! What kind of stickers?
-        speaker.Speak(string2say10) 'Once, Mrs. Peterson made cookies for the class.
-        Thread.Sleep(5750)          'That’s really nice of Mrs. Peterson, but I was just asking you about what kind of stickers you like?
-        speaker.Speak(string2say11) 'I like the scratch and sniff stickers
+        SpeakString(string2say10) 'Once, Mrs. Peterson made cookies for the class.
+        Thread.Sleep(5750) _
+        'That’s really nice of Mrs. Peterson, but I was just asking you about what kind of stickers you like?
+        SpeakString(string2say11) 'I like the scratch and sniff stickers
         Thread.Sleep(3000)          'Those are fun stickers! I love animal stickers.
-        speaker.Speak(string2say12) 'Do you love cookies?  I love cookies!
+        SpeakString(string2say12) 'Do you love cookies?  I love cookies!
         Thread.Sleep(2500)          'Oh! Uh... me too!
-        speaker.Speak(string2say13) 'Does that mean we can have some now?
-        SerialPort1.Open()
-        SerialPort1.Write("E")      'wink
-        SerialPort1.Close()
+        SpeakString(string2say13) 'Does that mean we can have some now?
+        SendCommand("E")      'wink
+
         Thread.Sleep(3000)          'No, I don't think so, L-E...  Maybe next time! 
     End Sub
+
     Private Sub Script3_Click(sender As Object, e As EventArgs) Handles Script3.Click
-        currentThread = New System.Threading.Thread(AddressOf Thread3Task)
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        currentThread = New Thread(AddressOf Thread3Task)
+        DisableTimers()
         currentThread.Start()
     End Sub
+
     Private Sub Thread4Task()
-        Dim string2say As String = "Yes. I would like to be a doctor one day."
-        Dim string2say2 As String = "I’ve wanted to be a doctor ever since I got my first toy doctor kit"
-        Dim string2say3 As String = "I really like helping people and making them feel better."
-        Dim string2say4 As String = "I have a friend who is a doctor. She’s awesome."
-        Dim string2say5 As String = "A heart doctor."
-        Dim string2say6 As String = "Yeah."
-        Dim string2say7 As String = "A children's doctor"
-        Dim string2say8 As String = "Yeah."
-        Dim string2say9 As String = "Because children are really cool."
-        Dim string2say10 As String = "My friend has a cool model of a heart in her office, and once she let me play with it."
-        Dim string2say11 As String = "Yeah, he gives me lollipops."
+        Dim string2say = "Yes. I would like to be a doctor one day."
+        Dim string2say2 = "I’ve wanted to be a doctor ever since I got my first toy doctor kit"
+        Dim string2say3 = "I really like helping people and making them feel better."
+        Dim string2say4 = "I have a friend who is a doctor. She’s awesome."
+        Dim string2say5 = "A heart doctor."
+        Dim string2say6 = "Yeah."
+        Dim string2say7 = "A children's doctor"
+        Dim string2say8 = "Yeah."
+        Dim string2say9 = "Because children are really cool."
+        Dim string2say10 = "My friend has a cool model of a heart in her office, and once she let me play with it."
+        Dim string2say11 = "Yeah, he gives me lollipops."
 
-        speaker.Rate = -2
-        speaker.Volume = 100
-        'speaker.SelectVoice(LEVoice)
-
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(5000)          'So, L-E, do you have any idea what you want to be when you grow up?
-        speaker.Speak(string2say)   'Yes. I would like to be a doctor one day.
+        SpeakString(string2say)   'Yes. I would like to be a doctor one day.
         Thread.Sleep(900)          'That's awesome. Why do you wan--
-        speaker.Speak(string2say2)  'I’ve wanted to be a doctor ever since I got my first toy doctor kit.
+        SpeakString(string2say2)  'I’ve wanted to be a doctor ever since I got my first toy doctor kit.
         Thread.Sleep(2800)          'That's great! Who got you that doctor kit?
-        speaker.Speak(string2say3)  'I really like helping people and making them feel better.
-        Thread.Sleep(5500)          'Yeah that’s nice, but I was wondering who got you that doctor kit... Do you know any doctors?
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
+        SpeakString(string2say3)  'I really like helping people and making them feel better.
+        Thread.Sleep(5500) _
+        'Yeah that’s nice, but I was wondering who got you that doctor kit... Do you know any doctors?
+        SendCommand("B")      'looks away
+        SendCommand("8")
         Thread.Sleep(1000)          'pause for motors
-        speaker.Speak(string2say4)  'I have a friend who is a doctor. She’s awesome.
+        SpeakString(string2say4)  'I have a friend who is a doctor. She’s awesome.
         Thread.Sleep(1000)          'pause in that position for a sec 
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(1500)          'That’s great! What kind of doctor is your friend?
-        speaker.Speak(string2say5)  'A heart doctor.
+        SpeakString(string2say5)  'A heart doctor.
         Thread.Sleep(3500)          'Woah, cool! What kind of doctor do you want to be?
-        speaker.Speak(string2say6)  'Yeah.
+        SpeakString(string2say6)  'Yeah.
         Thread.Sleep(2500)          'Soo... What kind of doctor do you want to be?
-        speaker.Speak(string2say7)  'A children’s doctor. 
+        SpeakString(string2say7)  'A children’s doctor. 
         Thread.Sleep(2000)          'Oh wow! Why is that?
-        speaker.Speak(string2say8)  'Yeah.
+        SpeakString(string2say8)  'Yeah.
         Thread.Sleep(1200)          'Yeah, why?
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
-        speaker.Speak(string2say9)  'Because children are really cool.
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("B")      'looks away
+        SendCommand("8")
+        SpeakString(string2say9)  'Because children are really cool.
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(3000)          'That is true! Do you like your doctor?
-        speaker.Speak(string2say10) 'My friend has a cool model of a heart in her office, and once, she let me play with it!
+        SpeakString(string2say10) _
+        'My friend has a cool model of a heart in her office, and once, she let me play with it!
         Thread.Sleep(4000)          'That sounds pretty neat, but I was just asking you if you liked your doctor.
-        SerialPort1.Open()
-        SerialPort1.Write("3")      'blink
-        SerialPort1.Close()
+        SendCommand("3")      'blink
         Thread.Sleep(3000)          'long pause
-        speaker.Speak(string2say11) 'Yeah. He gives me lollipops. 
+        SpeakString(string2say11) 'Yeah. He gives me lollipops. 
         Thread.Sleep(2000)          'Nice! I love lollipops! 
     End Sub
+
     Private Sub Script4_Click(sender As Object, e As EventArgs) Handles Script4.Click
-        currentThread = New System.Threading.Thread(AddressOf Thread4Task)
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        currentThread = New Thread(AddressOf Thread4Task)
+        DisableTimers()
         currentThread.Start()
     End Sub
+
     Sub Thread5Task()
-        Dim string2say As String = "Hello."
-        Dim string2say2 As String = "I hate roller coasters"
-        Dim string2say3 As String = "I like chocolate cake"
-        Dim string2say4 As String = "I especially like chocolate cake with peanut butter frosting"
-        Dim string2say5 As String = "Yeah. Peanut butter is the best!"
-        Dim string2say6 As String = "Yeah"
-        Dim string2say7 As String = "Yes, PB&J sandwiches are my favorite kind of lunch"
-        Dim string2say8 As String = "And Peanut butter cups are my favorite chocolate"
-        Dim string2say9 As String = "That's interesting"
+        Dim string2say = "Hello."
+        Dim string2say2 = "I hate roller coasters"
+        Dim string2say3 = "I like chocolate cake"
+        Dim string2say4 = "I especially like chocolate cake with peanut butter frosting"
+        Dim string2say5 = "Yeah. Peanut butter is the best!"
+        Dim string2say6 = "Yeah"
+        Dim string2say7 = "Yes, PB&J sandwiches are my favorite kind of lunch"
+        Dim string2say8 = "And Peanut butter cups are my favorite chocolate"
+        Dim string2say9 = "That's interesting"
 
-        speaker.Rate = -2
-        speaker.Volume = 100
-        'speaker.SelectVoice(LEVoice)
-
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(1000)          'Hi L-E. 
-        speaker.Speak(string2say)   'Hello
+        SpeakString(string2say)   'Hello
         Thread.Sleep(2000)          'What's your favorite kind of food?
-        speaker.Speak(string2say2)  'I hate roller coasters
+        SpeakString(string2say2)  'I hate roller coasters
         Thread.Sleep(4250)          'Oh, I don't like them either, but I was asking about your favorite kind of food
-        speaker.Speak(string2say3)  'I like chocolate cake
+        SpeakString(string2say3)  'I like chocolate cake
         Thread.Sleep(1750)          'Oh, wow! Me too!
-        SerialPort1.Open()
-        SerialPort1.Write("B")      'looks away
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("8")
-        SerialPort1.Close()
+        SendCommand("B")      'looks away
+        SendCommand("8")
         Thread.Sleep(1000)          'pause for motors
-        speaker.Speak(string2say4)  'I espeecially like chocolate cake with peanut butter frosting
+        SpeakString(string2say4)  'I espeecially like chocolate cake with peanut butter frosting
         Thread.Sleep(1000)          'pause in that position for a sec
-        SerialPort1.Open()
-        SerialPort1.Write("A")      'turns to speaker
-        SerialPort1.Close()
-        SerialPort1.Open()
-        SerialPort1.Write("9")
-        SerialPort1.Close()
+        SendCommand("A")      'turns to speaker
+        SendCommand("9")
         Thread.Sleep(2000)          'That sounds really good.  Do you love peanut butter?
-        speaker.Speak(string2say5)  'Yeah, peanut butter is the best!
+        SpeakString(string2say5)  'Yeah, peanut butter is the best!
         Thread.Sleep(3000)          'I see! What do you like eating peanut butter with?
-        speaker.Speak(string2say6)  'Yeah.
+        SpeakString(string2say6)  'Yeah.
         Thread.Sleep(6500)          'So do you eat peanut butter in sandwiches?... (long pause)
-        speaker.Speak(string2say7)  'Yes, PB&J sandwiches are my favorite kind of lunch
+        SpeakString(string2say7)  'Yes, PB&J sandwiches are my favorite kind of lunch
         Thread.Sleep(1000)          'Nice. I like--
-        speaker.Speak(string2say8)  'Peanut butter cups are my favorite chocolate!
-        Thread.Sleep(5000)          'That's nice, L-E. I was just saying that I like to eat peanut butter sandwiches with bananas.
-        speaker.Speak(string2say9)  'That's interesting
+        SpeakString(string2say8)  'Peanut butter cups are my favorite chocolate!
+        Thread.Sleep(5000) _
+        'That's nice, L-E. I was just saying that I like to eat peanut butter sandwiches with bananas.
+        SpeakString(string2say9)  'That's interesting
         Thread.Sleep(500)           'Yup!
     End Sub
+
     Private Sub Demo_Click(sender As Object, e As EventArgs) Handles Demo.Click
-        currentThread = New System.Threading.Thread(AddressOf Thread5Task)
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        currentThread = New Thread(AddressOf Thread5Task)
+        DisableTimers()
         currentThread.Start()
     End Sub
+
 #End Region
 
 #Region "Stallers"
+
     Private Sub Staller1_Click(sender As Object, e As EventArgs) Handles Staller1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "That's a good question!... Let me think..."
-        speaker.Rate = 0.2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("That's a good question!... Let me think...", 0.2, 100, True)
     End Sub
 
     Private Sub Staller2_Click(sender As Object, e As EventArgs) Handles Staller2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "I'm not sure...  I'll have to ask my mom."
-        speaker.Rate = 0.2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I'm not sure...  I'll have to ask my mom.", 0.2, 100, True)
     End Sub
 
     Private Sub Staller3_Click(sender As Object, e As EventArgs) Handles Staller3.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Welllllll...."
-        speaker.Rate = 0.5
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Welllllll....", 0.5, 100, True)
     End Sub
 
     Private Sub Staller4_Click(sender As Object, e As EventArgs) Handles Staller4.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Sorry, can you say that again?"
-        speaker.Rate = 0.2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Sorry, can you say that again?", 0.2, 100, True)
     End Sub
+
 #End Region
 
 #Region "Response Timing"
+
     Private Sub Interrupt1_Click(sender As Object, e As EventArgs) Handles Interrupt1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Oh yeah and I forgot that I wanted to say something else"
-        SerialPort1.Open()
-        SerialPort1.Write("R")
-        SerialPort1.Close()
-        speaker.Speak(string2say)
+        DisableTimers()
+        SendCommand("R")
+        SpeakString("Oh yeah and I forgot that I wanted to say something else")
         Interrupt1.BackColor = Color.Gold
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
 
     Private Sub Interrupt2_Click(sender As Object, e As EventArgs) Handles Interrupt2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Also there was something else I wanted to add..."
-        SerialPort1.Open()
-        SerialPort1.Write("R")
-        SerialPort1.Close()
-        speaker.Speak(string2say)
+        DisableTimers()
+        SendCommand("R")
+        SpeakString("Also there was something else I wanted to add...")
         Interrupt2.BackColor = Color.Gold
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
+
     Private Sub DelayBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles DelayBox.KeyPress
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        DisableTimers()
         If Asc(e.KeyChar) = 13 Then
             e.Handled = True
-            Dim message As String
-            message = DelayBox.Text
-            speaker.Rate = 0.2
-            speaker.Volume = 100
-            speaker.SelectVoice(LEVoice)
             Thread.Sleep(2500)
-            speaker.SpeakAsync(message)
+            SpeakString(DelayBox.Text, 0.2)
             DelayBox.Clear()
             DelayBox.BackColor = Color.Gold
         End If
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
+
     Private Sub DelayClear_Click(sender As Object, e As EventArgs) Handles DelayClear.Click
         DelayBox.Clear()
     End Sub
+
 #End Region
 
 #Region "Common Convo"
-    Private Sub LikeBox_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles LikeBox.KeyPress
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+
+    Private Sub LikeBox_KeyDown(sender As Object, e As KeyPressEventArgs) Handles LikeBox.KeyPress
+        DisableTimers()
         If Asc(e.KeyChar) = 13 Then
             e.Handled = True
-            Dim message As String
-            message = LikeBox.Text
-            speaker.Rate = 0.2
-            speaker.Volume = 100
-            speaker.SelectVoice(LEVoice)
-            speaker.SpeakAsync("I like " + message)
+            SpeakString("I like " + LikeBox.Text, 0.2)
             LikeBox.Clear()
         End If
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
 
-    Private Sub DontLikeBox_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles DontLikeBox.KeyPress
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+    Private Sub DontLikeBox_KeyDown(sender As Object, e As KeyPressEventArgs) Handles DontLikeBox.KeyPress
+        DisableTimers()
         If Asc(e.KeyChar) = 13 Then
             e.Handled = True
-            Dim message As String
-            message = DontLikeBox.Text
-            speaker.Rate = 0.2
-            speaker.Volume = 100
-            speaker.SelectVoice(LEVoice)
-            speaker.SpeakAsync("I don't like " + message)
+            SpeakString("I don't like " + DontLikeBox.Text, 0.2)
             DontLikeBox.Clear()
         End If
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
+
     Private Sub LikeClear_Click(sender As Object, e As EventArgs) Handles LikeClear.Click
         LikeBox.Clear()
     End Sub
@@ -1239,37 +712,7 @@ Public Class Form1
     End Sub
 
     Private Sub FaveSelect_Click(sender As Object, e As EventArgs) Handles Fave.SelectedIndexChanged
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim message1, message2 As String
-        message1 = Fave.Text
-        If message1 = "animal" Then
-            message2 = "a lion"
-        ElseIf message1 = "book" Then
-            message2 = "Charlie and the Chocolate Factory"
-        ElseIf message1 = "color" Then
-            message2 = "green"
-        ElseIf message1 = "flavor" Then
-            message2 = "chocolate"
-        ElseIf message1 = "food" Then
-            message2 = "cake"
-        ElseIf message1 = "game" Then
-            message2 = "Super Mario Bros."
-        ElseIf message1 = "movie" Then
-            message2 = "Wall-E"
-        ElseIf message1 = "sport" Then
-            message2 = "soccer"
-        Else
-            message2 = "Phineas and Ferb"
-        End If
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync("My favorite " + message1 + "is " + message2)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        TellFavorite(Fave.Text)
     End Sub
 
     Private Sub FaveClear_Click(sender As Object, e As EventArgs) Handles FaveCont.Click
@@ -1290,499 +733,172 @@ Public Class Form1
         ElseIf message1 = "movie" Then
             message2 = "It's about robots, like me!"
         ElseIf message1 = "sport" Then
-            message2 = "It's the greatest sport in the world.  But did you know they call it football in other countries?"
+            message2 =
+                "It's the greatest sport in the world.  But did you know they call it football in other countries?"
         Else
             message2 = "I never want summer to end!"
         End If
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(message2)
+        SpeakString(message2)
     End Sub
+
 #End Region
 
 #Region "Conversation Repair"
+
     Private Sub Recess1_Click(sender As Object, e As EventArgs) Handles Recess1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "I love recess."
-        SerialPort1.Open()
-        SerialPort1.Write("R")
-        SerialPort1.Close()
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
+        DisableTimers()
+        SendCommand("R")
+        SpeakString("I love recess.")
         Recess1.BackColor = Color.Gold
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
+
     Private Sub Recess2_Click(sender As Object, e As EventArgs) Handles Recess2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Playing in the playground is always fun!"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Playing in the playground is always fun!", -2, 100, True)
     End Sub
 
     Private Sub History1_Click(sender As Object, e As EventArgs) Handles History1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "History is pretty boring"
-        speaker.Rate = 0.5
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
+        SpeakString("History is pretty boring", 0.5, 100, True)
         History1.BackColor = Color.Gold
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
     End Sub
+
     Private Sub History2_Click(sender As Object, e As EventArgs) Handles History2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "It's not fun memorizing facts about old people"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("It's not fun memorizing facts about old people", -2, 100, True)
     End Sub
+
     Private Sub Cookies1_Click(sender As Object, e As EventArgs) Handles Cookies1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Do you like cookies?  I love cookies"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
+        SpeakString("Do you like cookies?  I love cookies", -2, 100, True)
         Cookies1.BackColor = Color.Gold
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
     End Sub
+
     Private Sub Cookies2_Click(sender As Object, e As EventArgs) Handles Cookies2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "My favorite kinds are chocolate chip, but I also really like peanut butter cookies."
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("My favorite kinds are chocolate chip, but I also really like peanut butter cookies.", -2, 100, True)
     End Sub
+
     Private Sub Friend1_Click(sender As Object, e As EventArgs) Handles Friend1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Do you know, I've got a friend named Jimmy, and he's really funny."
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
+        SpeakString("Do you know, I've got a friend named Jimmy, and he's really funny.", -2, 100, True)
         Friend1.BackColor = Color.Gold
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
     End Sub
+
     Private Sub Friend2_Click(sender As Object, e As EventArgs) Handles Friend2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "One time he made such a silly face, I couldn't stop laughing for five whole minutes!"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("One time he made such a silly face, I couldn't stop laughing for five whole minutes!", -2, 100, True)
     End Sub
+
 #End Region
 
 #Region "Weekend"
+
     Private Sub Beach1_Click(sender As Object, e As EventArgs) Handles Beach1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "This weekend I went to the beach"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("This weekend I went to the beach", -2, 100, True)
     End Sub
 
     Private Sub Beach2_Click(sender As Object, e As EventArgs) Handles Beach2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I always make sand castles when I go to the beach.  I'm a pro at a making sand castles!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I always make sand castles when I go to the beach.  I'm a pro at a making sand castles!", -2, 100,
+                    True)
     End Sub
+
     Private Sub Beach3_Click(sender As Object, e As EventArgs) Handles Beach3.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I collect seashells so I love finding really cool seashells when I'm at the beach"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I collect seashells so I love finding really cool seashells when I'm at the beach", -2, 100, True)
     End Sub
+
     Private Sub Party1_Click(sender As Object, e As EventArgs) Handles Party1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "This weekend was my friend Charlie's birthday.  He had an awesome birthday party"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("This weekend was my friend Charlie's birthday.  He had an awesome birthday party", -2, 100, True)
     End Sub
 
     Private Sub Party2_Click(sender As Object, e As EventArgs) Handles Party2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "We played some fun games and there was a cool robot dance"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("We played some fun games and there was a cool robot dance", -2, 100, True)
     End Sub
+
     Private Sub Party3_Click(sender As Object, e As EventArgs) Handles Party3.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I ate really good cake at the party too!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I ate really good cake at the party too!", -2, 100, True)
     End Sub
+
     Private Sub Game1_Click(sender As Object, e As EventArgs) Handles Game1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "This weekend I played some video games."
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("This weekend I played some video games.", -2, 100, True)
     End Sub
 
     Private Sub Game2_Click(sender As Object, e As EventArgs) Handles Game2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I played Mario Cart and beat my high score and made it to the next level!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I played Mario Cart and beat my high score and made it to the next level!", -2, 100, True)
     End Sub
+
     Private Sub Game3_Click(sender As Object, e As EventArgs) Handles Game3.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I love playing racing games. I wish I could watch a car race in real life!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I love playing racing games. I wish I could watch a car race in real life!", -2, 100, True)
     End Sub
 
     Private Sub Lego1_Click(sender As Object, e As EventArgs) Handles Lego1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "This weekend I played with legos"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("This weekend I played with legos", -2, 100, True)
     End Sub
 
     Private Sub Lego2_Click(sender As Object, e As EventArgs) Handles Lego2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I built a really cool tower.  Next time I'm gonna build one so tall, it's going to be taller than this table!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString(
+            "I built a really cool tower.  Next time I'm gonna build one so tall, it's going to be taller than this table!",
+            -2, 100, True)
     End Sub
+
     Private Sub Lego3_Click(sender As Object, e As EventArgs) Handles Lego3.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Lego's are really fun because you can build anything you want!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Lego's are really fun because you can build anything you want!", -2, 100, True)
     End Sub
+
 #End Region
 
 #Region "Responses"
+
     Private Sub DontKnow_Click(sender As Object, e As EventArgs) Handles DontKnow.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I don't know"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I don't know", -2, 100, True)
     End Sub
 
     Private Sub Yes_Click(sender As Object, e As EventArgs) Handles Yes.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Yes"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Yes", -2, 100, True)
     End Sub
 
     Private Sub No_Click(sender As Object, e As EventArgs) Handles No.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "No"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("No", -2, 100, True)
     End Sub
 
     Private Sub Sorry_Click(sender As Object, e As EventArgs) Handles Sorry.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Sorry"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Sorry", -2, 100, True)
     End Sub
 
     Private Sub HBU_Click(sender As Object, e As EventArgs) Handles HBU.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "How about you?"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("How about you?", -2, 100, True)
     End Sub
+
     Private Sub Guess_Click(sender As Object, e As EventArgs) Handles Guess.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "I guess"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("I guess", -2, 100, True)
     End Sub
 
     Private Sub Maybe_Click(sender As Object, e As EventArgs) Handles Maybe.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Maybe"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Maybe", -2, 100, True)
     End Sub
+
 #End Region
 
 #Region "Exclamations"
+
     Private Sub Exclaim1_Click(sender As Object, e As EventArgs) Handles Exclaim1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "How cool!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("How cool!", -2, 100, True)
     End Sub
 
     Private Sub Exclaim2_Click(sender As Object, e As EventArgs) Handles Exclaim2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Wow!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Wow!", -2, 100, True)
     End Sub
 
     Private Sub Exclaim3_Click(sender As Object, e As EventArgs) Handles Exclaim3.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "That's great!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("That's great!", -2, 100, True)
     End Sub
 
     Private Sub Exclaim4_Click(sender As Object, e As EventArgs) Handles Exclaim4.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "You're AWESOME! " + myName
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("You're AWESOME! " + myName, -2, 100, True)
     End Sub
+
     Private Sub YoureCool_Click(sender As Object, e As EventArgs) Handles YoureCool.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "You're real cool!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("You're real cool!", -2, 100, True)
     End Sub
+
 #End Region
 
 #Region "Speech Controls"
+
     Private Sub StopButton_Click(sender As Object, e As EventArgs) Handles StopButton.Click
         Try
             If currentThread.IsAlive Then
@@ -1806,12 +922,8 @@ Public Class Form1
                 Exit Select
         End Select
         speaker.SpeakAsyncCancelAll()
-        SerialPort1.Open()
-        SerialPort1.Write("AA")
-        SerialPort1.Close()
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        SendCommand("AA")
+        DisableTimers()
     End Sub
 
     Private Sub Pause_Click(sender As Object, e As EventArgs) Handles Pause.Click
@@ -1822,9 +934,7 @@ Public Class Form1
         Catch ex As Exception
             Exit Try
         End Try
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        DisableTimers()
         Select Case speaker.State
             Case SynthesizerState.Speaking
                 speaker.Pause()
@@ -1847,215 +957,170 @@ Public Class Form1
         Select Case speaker.State
             Case SynthesizerState.Paused
                 speaker.Resume()
-                Exit Select 
+                Exit Select
         End Select
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
+
 #End Region
 
 #Region "Intro / Exit"
+
     Private Sub Hello_Click(sender As Object, e As EventArgs) Handles Hello.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Hello"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Hello.", -2, 100, True)
     End Sub
+
     Private Sub Hi_Click(sender As Object, e As EventArgs) Handles Hi.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        Dim string2say As String
-        string2say = "Hi, my name is L-E. What's your name?"
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Hi, my name is L-E. What's your name?", -2, 100, True)
     End Sub
+
     Private Sub MoveDrop_SelectedIndexChanged(sender As Object, e As EventArgs) Handles MoveDrop.SelectedIndexChanged
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
+        DisableTimers()
         Dim selection As String
         selection = MoveDrop.Text
         If selection = "eyes" Then
-            Dim string2say As String
-            string2say = "Look what I can do with my eyes!!"
-            speaker.Rate = -2
-            speaker.Volume = 100
-            speaker.SelectVoice(LEVoice)
-            speaker.Speak(string2say)
-            SerialPort1.Open()
-            SerialPort1.Write("S")
-            SerialPort1.Close()
-
-            'builder.AppendText("Get in the house.", PromptEmphasis.Moderate)
-            'builder.AppendBreak()
-            'builder.AppendText("Get in the house now.", PromptEmphasis.Strong)
-            'speaker.SpeakAsync(builder)
+            SpeakString("Look what I can do with my eyes!!")
+            SendCommand("S")
         ElseIf selection = "mouth" Then
-            Dim string2say As String
-            string2say = "Look what I can do with my mouth!!"
-            speaker.Rate = -2
-            speaker.Volume = 100
-            speaker.SelectVoice(LEVoice)
-            speaker.Speak(string2say)
-            SerialPort1.Open()
-            SerialPort1.Write("Z")
-            SerialPort1.Close()
+            SpeakString("Look what I can do with my mouth!!")
+            SendCommand("Z")
         Else
-            Dim string2say As String
-            string2say = "Look what faces I can make!!"
-            speaker.Rate = -2
-            speaker.Volume = 100
-            speaker.SelectVoice(LEVoice)
-            speaker.Speak(string2say)
-            SerialPort1.Open()
-            SerialPort1.Write("Y")
-            SerialPort1.Close()
+            SpeakString("Look what faces I can make!!")
+            SendCommand("Y")
         End If
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        EnableTimers()
     End Sub
+
     Private Sub Bye_Click(sender As Object, e As EventArgs) Handles Bye.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Bye " + myName + ". That was fun!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Bye " + myName + ". That was fun!", -2, 100, True)
     End Sub
 
     Private Sub SeeYou_Click(sender As Object, e As EventArgs) Handles SeeYou.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "See you next time!"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("See you next time!", -2, 100, True)
     End Sub
+
 #End Region
 
 #Region "Story"
 
     Private Sub Story1_Click_1(sender As Object, e As EventArgs) Handles Story1.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Do you wanna hear a story?"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Do you wanna hear a story?", -2, 100, True)
     End Sub
+
     Private Sub Story2_Click(sender As Object, e As EventArgs) Handles Story2.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -3
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "One time, I was at a pool party.  It was my friend Jimmy's birthday, and he decided we should play a game.  He dropped these jewels at the bottom of the pool, and you had to see how many you could collect in thirty seconds.  Most people got around five.  But my friend Andy?  He was underwater for so long, we weren't sure if something had happened!  We were about to send someone in to look for him, when all of a sudden, he popped out of the pool.  He said he saw something sparkling at the bottom and thought it was a jewel, but it was covered under some dirt at the bottom of the pool, so he had to scrape it out.  And guess what?  He found a necklace Jimmy's sister dropped in the pool a long time ago!  We were all looking for Jewels, but, really, it was Andy who found the real treasure!"
-        speaker.SpeakAsync(string2say)
+        SpeakString(
+            "One time, I was at a pool party.  It was my friend Jimmy's birthday, and he decided we should play a game. " &
+            "He dropped these jewels at the bottom of the pool, and you had to see how many you could collect in thirty seconds. " &
+            "Most people got around five.  But my friend Andy?  He was underwater for so long, we weren't sure if something had happened! " &
+            "We were about to send someone in to look for him, when all of a sudden, he popped out of the pool.  He said he saw something " &
+            "sparkling at the bottom and thought it was a jewel, but it was covered under some dirt at the bottom of the pool, so he had to " &
+            "scrape it out.  And guess what?  He found a necklace Jimmy's sister dropped in the pool a long time ago!  We were all looking for " &
+            "Jewels, but, really, it was Andy who found the real treasure!", -3)
     End Sub
 
     Private Sub Story3_Click(sender As Object, e As EventArgs) Handles Story3.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -3
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Do you want to hear another story?"
-        speaker.SpeakAsync(string2say)
-        Timer1.Enabled = True
-        Timer2.Enabled = True
-        Timer3.Enabled = True
+        SpeakString("Do you want to hear another story?", -3, 100, True)
     End Sub
+
     Private Sub Story4_Click(sender As Object, e As EventArgs) Handles Story4.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Once, I had a playdate at my friend Alex's house and we really wanted to bake something. We both liked cookies and pizza, so we thought it would be an awesome idea to bake a cookie pizza! I used chocolate chips, mini oreos, marshmallows, and peanut butter chips as my toppings. Alex made a crazy pizza with gummy worms, M and M's, and bacon. Those were the weirdest cookie toppings I had ever seen. We put our cookie pizzas in the oven, and once they were done, we were so hungry, we ate 4 slices! I tried some of Alex's cookie pizza, and it was actually pretty good. Maybe I'll try making a crazy cookie pizza next time. That was one of the best playdates I've ever had."
-        speaker.SpeakAsync(string2say)
+        SpeakString(
+            "Once, I had a playdate at my friend Alex's house and we really wanted to bake something. We both liked cookies and pizza, " &
+            "so we thought it would be an awesome idea to bake a cookie pizza! I used chocolate chips, mini oreos, marshmallows, and peanut " &
+            "butter chips as my toppings. Alex made a crazy pizza with gummy worms, M and M's, and bacon. Those were the weirdest cookie toppings " &
+            "I had ever seen. We put our cookie pizzas in the oven, and once they were done, we were so hungry, we ate 4 slices! I tried some of Alex's " &
+            "cookie pizza, and it was actually pretty good. Maybe I'll try making a crazy cookie pizza next time. That was one of the best playdates " &
+            "I've ever had.")
     End Sub
 
     Private Sub Story5_Click(sender As Object, e As EventArgs) Handles Story5.Click
-        Timer1.Enabled = False
-        Timer2.Enabled = False
-        Timer3.Enabled = False
-        speaker.Rate = -2
-        speaker.Volume = 100
-        speaker.SelectVoice(LEVoice)
-        Dim string2say As String
-        string2say = "Why don't you tell me a story!"
-        speaker.SpeakAsync(string2say)
+        SpeakString("Why don't you tell me a story!", -2, 100, True)
+    End Sub
+
+#End Region
+
+#Region "General Functions"
+
+    Private Sub EnableTimers()
         Timer1.Enabled = True
         Timer2.Enabled = True
         Timer3.Enabled = True
     End Sub
+
+    Private Sub DisableTimers()
+        Timer1.Enabled = False
+        Timer2.Enabled = False
+        Timer3.Enabled = False
+    End Sub
+
+    Private Sub SendCommand(cmd As String, Optional resetTimers As Boolean = False)
+        If failedToConnect Then Exit Sub
+        If resetTimers Then DisableTimers()
+        SerialPort1.Open()
+        SerialPort1.Write(cmd)
+        SerialPort1.Close()
+        If resetTimers Then EnableTimers()
+    End Sub
+
+    Private Sub SpeakString(txt As String, Optional rate As Double = -2, Optional volume As Double = 100,
+                            Optional resetTimers As Boolean = False)
+        If ResetTimers Then DisableTimers()
+        speaker.Rate = rate
+        speaker.Volume = volume
+        speaker.SpeakAsync(txt)
+        If ResetTimers Then EnableTimers()
+    End Sub
+
+    Private Sub TellFavorite(type As String)
+        Dim message2 As String
+        If type = "animal" Then
+            message2 = "a lion"
+        ElseIf type = "book" Then
+            message2 = "Charlie and the Chocolate Factory"
+        ElseIf type = "color" Then
+            message2 = "green"
+        ElseIf type = "flavor" Then
+            message2 = "chocolate"
+        ElseIf type = "food" Then
+            message2 = "cake"
+        ElseIf type = "game" Then
+            message2 = "Super Mario Bros."
+        ElseIf type = "movie" Then
+            message2 = "Wall-E"
+        ElseIf type = "sport" Then
+            message2 = "soccer"
+        Else
+            message2 = "Phineas and Ferb"
+        End If
+        SpeakString("My favorite " + type + "is " + message2, -2, 100, True)
+    End Sub
+
 #End Region
 
 #Region "Speech Recognition"
     'I tried to group all the speech recognition code together but there were some places that I couldn't.
     'Just look for '#JC
-    Private AutomationResponses As New Dictionary(Of String, BtnPress)
-    Private Delegate Sub BtnPress(sender As Object, e As EventArgs)
-    Private YesResponse As BtnPress
-    Private NoResponse As BtnPress
-    Private WhyResponse As BtnPress
+    Private ReadOnly DefaultResponses As New List(Of String)
+    Private KnownResponses As Dictionary(Of String, String)
+
+    Private ResponseHandler As EventHandler
+    Private RecoginizedPrompt As String = ""
+
     Private Speech As String
 
-    'Network Socket for Chrome communication
-    Dim allSockets As New List(Of IWebSocketConnection)()
-    Dim server As New WebSocketServer("wss://0.0.0.0:8182")
+    'Quick Recognition Variables
+    Private PromptHandled As Boolean = False
+    Private LastSpeechUpdate As Long = Environment.TickCount
+    Private CurrentPrompt As String = ""
+    Private HandledSpeech As String = ""
+    Private ReadOnly ActionsTaken As List(Of String) = New List(Of String)
+    Private NewText As String = ""
+    Private ReadOnly SpeechLock As New Object
 
+    'Network Socket for Chrome communication
+    ReadOnly allSockets As New List(Of IWebSocketConnection)()
+    ReadOnly server As New WebSocketServer("wss://0.0.0.0:8182")
 
     Sub InitSpeechRecoginition()
-
-        Dim keywords As New Choices()
-        keywords.Add("game")
-        keywords.Add("story")
-        keywords.Add("fritz")
-        keywords.Add("l e")
-        keywords.Add("hello")
-        keywords.Add("how are you")
-        keywords.Add("why")
 
         'Setup the websocket server to receive connections from Chrome
         server.Certificate = New X509Certificate2("fritz.pfx", "oursslpass")
@@ -2073,103 +1138,262 @@ Public Class Form1
                                                 Else
                                                     Speech = "(Re)Connected to Chrome dictation page successfully."
                                                 End If
-
                                             End Function
-
                      End Function)
 
 
         'Load the AutomationActions Before Starting to Listen
         'These map potential phrases to actions. They could be improved however
         'in order to follow a script, or not repeat questions, etc.
-        AutomationResponses.Add("tell me a story", AddressOf Story2_Click)
-        AutomationResponses.Add("story", AddressOf Story2_Click)
-        AutomationResponses.Add("yes", YesResponse) 'Not working with references, not sure why.
-        AutomationResponses.Add("no", NoResponse) 'Not working with references, not sure why.
-        AutomationResponses.Add("hello L-E", AddressOf Hello_Click)
-        AutomationResponses.Add("hello", AddressOf Hi_Click)
-        AutomationResponses.Add("how are you", AddressOf NotGreat_Click)
-        AutomationResponses.Add("how're you doing", AddressOf NotGreat_Click)
-        AutomationResponses.Add("what did you do this weekend", AddressOf Lego1_Click)
-        AutomationResponses.Add("why", AddressOf NotGreatCont_Click) 'Not working with references, not sure why. Should be WhyResponse if that was working.
 
+        'LOOK BELOW THIS SUB TO MAP ACTIONS TO THESE RESPONSES
+
+        'Introductions
+        DefaultResponses.Add("hello l-e")
+        DefaultResponses.Add("hi l-e")
+        DefaultResponses.Add("hi")
+        DefaultResponses.Add("hello")
+
+        'Small Talk
+        DefaultResponses.Add("how are you")
+        DefaultResponses.Add("how're you doing")
+        DefaultResponses.Add("what did you do this weekend")
+        DefaultResponses.Add("what did you do today")
+
+        'Stories
+        DefaultResponses.Add("tell me a story")
+
+        'Favorites
+        DefaultResponses.Add("what is your favorite meal")
+        DefaultResponses.Add("what is your favorite animal")
+        DefaultResponses.Add("what is your favorite book")
+        DefaultResponses.Add("what is your favorite color")
+        DefaultResponses.Add("what is your favorite flavor")
+        DefaultResponses.Add("what is your favorite food")
+        DefaultResponses.Add("what is your favorite game")
+        DefaultResponses.Add("what is your favorite movie")
+        DefaultResponses.Add("what is your favorite tv show")
+
+        'Special Cases
+        DefaultResponses.Add("yes")
+        DefaultResponses.Add("no")
+        DefaultResponses.Add("why")
+
+        'LOOK BELOW THIS SUB TO MAP ACTIONS TO THESE RESPONSES
+
+        ResponseHandler = AddressOf HandleResponse
+
+        KnownResponses = LoadDictionaryFromCsv("responses.csv")
+        If (KnownResponses Is Nothing) Then KnownResponses = New Dictionary(Of String, String)
+    End Sub
+
+    Private Sub HandleResponse(sender As Object, e As EventArgs)
+        Select Case (RecoginizedPrompt)
+
+            'Introductions
+            Case "hello"
+                Hi_Click(Nothing, Nothing)
+            Case "hello l-e"
+                Hello_Click(Nothing, Nothing)
+            Case "hi"
+                Hi_Click(Nothing, Nothing)
+            Case "hi l-e"
+                Hello_Click(Nothing, Nothing)
+
+                'Small Talk
+            Case "how are you"
+                NotGreat_Click(Nothing, Nothing)
+            Case "how are you doing"
+                NotGreat_Click(Nothing, Nothing)
+            Case "what did you do this weekend"
+                Lego1_Click(Nothing, Nothing)
+            Case "what did you do today"
+                TodayA_Click(Nothing, Nothing)
+
+                'Stories
+            Case "tell me a story"
+                Story2_Click(Nothing, Nothing)
+
+                'Favorites
+            Case "what is your favorite meal"
+                TellFavorite("food")
+            Case "what is your favorite animal"
+                TellFavorite("animal")
+            Case "what is your favorite book"
+                TellFavorite("book")
+            Case "what is your favorite color"
+                TellFavorite("color")
+            Case "what is your favorite flavor"
+                TellFavorite("flavor")
+            Case "what is your favorite food"
+                TellFavorite("food")
+            Case "what is your favorite game"
+                TellFavorite("game")
+            Case "what is your favorite movie"
+                TellFavorite("movie")
+            Case "what is your favorite tv show"
+                TellFavorite("tv show")
+
+                'Special Cases
+            Case "why"
+                NotGreatCont_Click(Nothing, Nothing)
+        End Select
     End Sub
 
     'This is called automatically whenever speech is successfully recognized.
     Public Sub SpeechRecognized(heardtext As String)
-        Dim matchThreshhold As Double = 0.5
-        Dim currentMatchVal As Double = 0.0
+        Dim matchThreshhold = 0.65
+        Dim currentMatchVal = 0.0
         Dim currentMatch As String
+        Dim finalized As Boolean
+        Dim time As Long = Environment.TickCount
 
         'This is a delegate for any action we may take.
-        Dim mydel As BtnPress
-
-        'Because we are in a different thread, we update a class variable which a timer sets the form to display (We should use a delegate here)
-        Speech = heardtext
-
-        'Check for common misconceptions
-        If (heardtext = "l e") Then heardtext = "Eli" 'l e is really close to Eli. We check for l e because Microsoft Speech thinks Eli should sounds like Ely
-        heardtext = heardtext.Replace("for its", "fritz") 'Another common misconception that I am course correcting.
-        heardtext = heardtext.Replace("y", "why") 'Another common misconception that I am course correcting.
-        heardtext = Trim(heardtext)
-
-        'If we are accepting automatic actions, score the phrase against all our potential responses, find the best and implement the action.
-        If chkAutoAction.Checked Then
-            For Each p In AutomationResponses
-                If (Compare(p.Key, heardtext) > currentMatchVal) Then
-                    currentMatchVal = Compare(p.Key, heardtext)
-                    currentMatch = p.Key
-                End If
-            Next
-            If (currentMatchVal >= matchThreshhold) Then
-                AutomationResponses.TryGetValue(currentMatch, mydel)
-                If (Not mydel Is Nothing) Then
-                    mydel.Invoke(Nothing, Nothing)
+        If heardtext = "" Then Exit Sub
+        SyncLock SpeechLock
+            'Because we are in a different thread, we update a class variable which a timer sets the form to display (We should use a delegate here)
+            If (HandledSpeech.Length > 0 And heardtext.Length > 0) Then heardtext = heardtext.Replace(HandledSpeech, "")
+            If heardtext.Length > 2 Then
+                If (NewText <> heardtext) Then LastSpeechUpdate = time
+                If heardtext.Substring(0, 2) = "%1" Then
+                    Speech = heardtext.Substring(2).Trim()
+                    Speech = Speech.Replace("  ", " ").Trim()
+                    finalized = True
+                    PromptHandled = False
+                ElseIf heardtext.Substring(0, 2) = "%0" Then
+                    Speech = heardtext.Substring(2).Trim()
+                    Speech = Speech.Replace("  ", " ").Trim()
+                    PromptHandled = False
+                    NewText = Speech
                 End If
             End If
-        End If
+            Speech = Speech.Replace("  ", " ")
+            If ((CurrentPrompt = Speech And LastSpeechUpdate + 500 < time) Or (finalized)) And PromptHandled = False _
+                Then
+                'Check for common misconceptions
+                Speech = Speech.ToLower()
+                Speech = Speech.Replace("ellie", "l-e")
+                Speech = Speech.Replace("allie", "l-e")
+                Speech = Speech.Replace(" y ", " why ") 'Another common misconception that I am course correcting.
+                Speech = Speech.Trim()
+
+                'If we are accepting automatic actions, score the phrase against all our potential responses, find the best and implement the action.
+                If chkAutoAction.Checked Then
+                    If (GetIndexOfKey(KnownResponses, Speech) > -1) Then
+                        Speech = KnownResponses(Speech)
+                    End If
+                    For Each p In DefaultResponses
+                        If (Compare(p, Speech) > currentMatchVal) Then
+                            currentMatchVal = Compare(p, Speech)
+                            currentMatch = p
+                        End If
+                    Next
+                    If (currentMatchVal >= matchThreshhold) Then
+                        If (speaker.State = SynthesizerState.Ready And ActionsTaken.IndexOf(currentMatch) = -1) Then
+                            RecoginizedPrompt = currentMatch
+                            ResponseHandler.Invoke(Nothing, Nothing)
+                            ActionsTaken.Add(currentMatch)
+                        End If
+                        If (GetIndexOfKey(KnownResponses, Speech) = -1) Then KnownResponses.Add(Speech, currentMatch)
+                    Else
+                        If (GetIndexOfKey(KnownResponses, Speech) = -1) Then KnownResponses.Add(Speech, "")
+                    End If
+                    SaveDictionaryToCsv("responses.csv", KnownResponses)
+                End If
+                PromptHandled = True
+                If Not finalized Then
+                    HandledSpeech = heardtext
+                Else
+                    HandledSpeech = ""
+                End If
+                If finalized Then ActionsTaken.Clear()
+            Else
+                CurrentPrompt = Speech
+            End If
+        End SyncLock
     End Sub
 
-    Function Compare(ByVal str1 As String, ByVal str2 As String) As Double
-        Dim str1arr As New List(Of String)
-        Dim str2arr As New List(Of String)
-        str1arr.AddRange(str1.Split(" "))
-        str2arr.AddRange(str2.Split(" "))
-        Dim x As Double
-        Dim y As Double
-        Dim matches As Double = 0
-        If str1arr.Count > 0 And str2arr.Count > 0 Then
-            For x = 0 To str1arr.Count - 1
-                For y = 0 To str2arr.Count - 1
-                    If (str1arr(x) <> "" And str2arr(y) <> "") Then
-                        If str1arr(x) = str2arr(y) Then
-                            str2arr(y) = ""
-                            str1arr(x) = ""
-                            Exit For
-                        End If
-                    End If
-                Next
-            Next
-            If str1arr.Count > str2arr.Count Then
-                y = str1arr.Count
-                For x = 0 To str1arr.Count - 1
-                    If str1arr(x) = "" Then matches = matches + 1
-                Next
-                Return matches / y
-            Else
-                y = str2arr.Count
-                For x = 0 To str2arr.Count - 1
-                    If str2arr(x) = "" Then matches = matches + 1
-                Next
-                Return matches / y
-            End If
+    Function Compare(str1 As String, str2 As String) As Double
+        Compare = Distance(str1, str2)
+    End Function
+
+    Private Function Distance(s1 As String, s2 As String) As Single
+        Dim p1 = GetPairs(s1)
+        Dim p2 = GetPairs(s2)
+        Return (2.0F * p1.Intersect(p2).Count()) / (p1.Count + p2.Count)
+    End Function
+
+    Private Function GetPairs(s As String) As List(Of String)
+        If s Is Nothing Then
+            Return New List(Of String)()
         End If
-        Return 0
+        If s.Length < 3 Then
+            Return New List(Of String)() From { _
+                s _
+                }
+        End If
+
+        Dim result As New List(Of String)()
+        For i = 0 To s.Length - 2
+            result.Add(s.Substring(i, 2).ToLower(CultureInfo.InvariantCulture))
+        Next
+        Return result
     End Function
     'This timer updates our form with the latest speech if any.
     Private Sub tmrSpeech_Tick(sender As Object, e As EventArgs) Handles tmrSpeech.Tick
         lblSpeechHeard.Text = Speech
+        If PromptHandled Then
+            lblSpeechHeard.ForeColor = Color.Blue
+        Else
+            lblSpeechHeard.ForeColor = Color.Red
+        End If
+        SpeechRecognized(CurrentPrompt)
     End Sub
+
+    Private Sub SaveDictionaryToCsv(Filename As String, Dict As Dictionary(Of String, String))
+        Dim outFile As StreamWriter = My.Computer.FileSystem.OpenTextFileWriter(Filename, False)
+        For i = 0 To Dict.Keys.Count - 1
+            outFile.WriteLine(Dict.Keys(i) & "," & Dict(Dict.Keys(i)))
+        Next
+        outFile.Close()
+    End Sub
+
+    Private Function LoadDictionaryFromCsv(Filename As String) As Dictionary(Of String, String)
+        Dim returnDict As New Dictionary(Of String, String)
+        Try
+            If File.Exists(Filename) Then
+                Using MyReader As New TextFieldParser(Filename)
+                    MyReader.Delimiters = {","}
+                    Dim currentRow As String()
+                    While Not MyReader.EndOfData
+                        Try
+                            currentRow = MyReader.ReadFields()
+                            If (currentRow.Count = 2) Then
+                                returnDict.Add(currentRow(0), currentRow(1))
+                            End If
+                        Catch ex As MalformedLineException
+                            MsgBox("Line " & ex.Message &
+                                   "is not valid and will be skipped.")
+                        End Try
+                    End While
+                End Using
+            End If
+        Catch ex As Exception
+        End Try
+        LoadDictionaryFromCsv = returnDict
+    End Function
+
+    Private Function GetIndexOfKey(tempDict As Dictionary(Of String, String), key As [String]) As Integer
+        Dim index As Integer = -1
+        For Each value As [String] In tempDict.Keys
+            index += 1
+            If key = value Then
+                Return index
+            End If
+        Next
+        Return -1
+    End Function
+
 #End Region
 
     'Private Sub Yawn_Click(sender As Object, e As EventArgs) Handles Yawn.Click
