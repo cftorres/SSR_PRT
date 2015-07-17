@@ -116,7 +116,6 @@ Partial Class Form1
         Me.ImOkay = New System.Windows.Forms.Button()
         Me.NotGreat = New System.Windows.Forms.Button()
         Me.DelayClear = New System.Windows.Forms.Button()
-        Me.NotGreatCont = New System.Windows.Forms.Button()
         Me.MeToo = New System.Windows.Forms.Button()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Story2 = New System.Windows.Forms.Button()
@@ -167,9 +166,11 @@ Partial Class Form1
         Me.TellMore = New System.Windows.Forms.Button()
         Me.Why = New System.Windows.Forms.Button()
         Me.Label19 = New System.Windows.Forms.Label()
-        Me.AboutYrslf = New System.Windows.Forms.Button()
         Me.ConvoAsk = New System.Windows.Forms.Button()
         Me.FaveAsk = New System.Windows.Forms.Button()
+        Me.SmallTalkBox = New System.Windows.Forms.ComboBox()
+        Me.SmallTalkAsk = New System.Windows.Forms.Button()
+        Me.SmallTalkAns = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Button1
@@ -226,7 +227,7 @@ Partial Class Form1
         '
         'blink
         '
-        Me.blink.Location = New System.Drawing.Point(230, 85)
+        Me.blink.Location = New System.Drawing.Point(223, 85)
         Me.blink.Name = "blink"
         Me.blink.Size = New System.Drawing.Size(77, 25)
         Me.blink.TabIndex = 152
@@ -244,7 +245,7 @@ Partial Class Form1
         '
         'EyeRight
         '
-        Me.EyeRight.Location = New System.Drawing.Point(230, 115)
+        Me.EyeRight.Location = New System.Drawing.Point(223, 115)
         Me.EyeRight.Margin = New System.Windows.Forms.Padding(2)
         Me.EyeRight.Name = "EyeRight"
         Me.EyeRight.Size = New System.Drawing.Size(77, 24)
@@ -254,7 +255,7 @@ Partial Class Form1
         '
         'HeadLeft
         '
-        Me.HeadLeft.Location = New System.Drawing.Point(323, 115)
+        Me.HeadLeft.Location = New System.Drawing.Point(316, 115)
         Me.HeadLeft.Margin = New System.Windows.Forms.Padding(2)
         Me.HeadLeft.Name = "HeadLeft"
         Me.HeadLeft.Size = New System.Drawing.Size(77, 24)
@@ -297,7 +298,7 @@ Partial Class Form1
         '
         'EyeLeft
         '
-        Me.EyeLeft.Location = New System.Drawing.Point(230, 145)
+        Me.EyeLeft.Location = New System.Drawing.Point(223, 145)
         Me.EyeLeft.Margin = New System.Windows.Forms.Padding(2)
         Me.EyeLeft.Name = "EyeLeft"
         Me.EyeLeft.Size = New System.Drawing.Size(77, 23)
@@ -317,7 +318,7 @@ Partial Class Form1
         '
         'HeadRight
         '
-        Me.HeadRight.Location = New System.Drawing.Point(323, 85)
+        Me.HeadRight.Location = New System.Drawing.Point(316, 85)
         Me.HeadRight.Margin = New System.Windows.Forms.Padding(2)
         Me.HeadRight.Name = "HeadRight"
         Me.HeadRight.Size = New System.Drawing.Size(77, 24)
@@ -366,7 +367,7 @@ Partial Class Form1
         '
         'HeadUp
         '
-        Me.HeadUp.Location = New System.Drawing.Point(323, 144)
+        Me.HeadUp.Location = New System.Drawing.Point(316, 144)
         Me.HeadUp.Margin = New System.Windows.Forms.Padding(2)
         Me.HeadUp.Name = "HeadUp"
         Me.HeadUp.Size = New System.Drawing.Size(77, 24)
@@ -376,7 +377,7 @@ Partial Class Form1
         '
         'HeadDown
         '
-        Me.HeadDown.Location = New System.Drawing.Point(323, 172)
+        Me.HeadDown.Location = New System.Drawing.Point(316, 172)
         Me.HeadDown.Margin = New System.Windows.Forms.Padding(2)
         Me.HeadDown.Name = "HeadDown"
         Me.HeadDown.Size = New System.Drawing.Size(77, 23)
@@ -386,7 +387,7 @@ Partial Class Form1
         '
         'Wink
         '
-        Me.Wink.Location = New System.Drawing.Point(230, 172)
+        Me.Wink.Location = New System.Drawing.Point(223, 172)
         Me.Wink.Margin = New System.Windows.Forms.Padding(2)
         Me.Wink.Name = "Wink"
         Me.Wink.Size = New System.Drawing.Size(77, 23)
@@ -476,7 +477,7 @@ Partial Class Form1
         '
         'Yelling
         '
-        Me.Yelling.Location = New System.Drawing.Point(323, 232)
+        Me.Yelling.Location = New System.Drawing.Point(316, 232)
         Me.Yelling.Margin = New System.Windows.Forms.Padding(2)
         Me.Yelling.Name = "Yelling"
         Me.Yelling.Size = New System.Drawing.Size(77, 24)
@@ -508,7 +509,7 @@ Partial Class Form1
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(227, 66)
+        Me.Label3.Location = New System.Drawing.Point(220, 66)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(164, 13)
         Me.Label3.TabIndex = 181
@@ -558,7 +559,7 @@ Partial Class Form1
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(436, 66)
+        Me.Label5.Location = New System.Drawing.Point(419, 66)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(46, 13)
         Me.Label5.TabIndex = 186
@@ -566,7 +567,7 @@ Partial Class Form1
         '
         'Hello
         '
-        Me.Hello.Location = New System.Drawing.Point(439, 85)
+        Me.Hello.Location = New System.Drawing.Point(422, 85)
         Me.Hello.Margin = New System.Windows.Forms.Padding(2)
         Me.Hello.Name = "Hello"
         Me.Hello.Size = New System.Drawing.Size(123, 24)
@@ -576,7 +577,7 @@ Partial Class Form1
         '
         'Hi
         '
-        Me.Hi.Location = New System.Drawing.Point(439, 115)
+        Me.Hi.Location = New System.Drawing.Point(422, 115)
         Me.Hi.Margin = New System.Windows.Forms.Padding(2)
         Me.Hi.Name = "Hi"
         Me.Hi.Size = New System.Drawing.Size(123, 24)
@@ -588,7 +589,7 @@ Partial Class Form1
         '
         Me.Label6.AutoSize = True
         Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(227, 211)
+        Me.Label6.Location = New System.Drawing.Point(220, 211)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(94, 13)
         Me.Label6.TabIndex = 189
@@ -596,7 +597,7 @@ Partial Class Form1
         '
         'Animated
         '
-        Me.Animated.Location = New System.Drawing.Point(230, 232)
+        Me.Animated.Location = New System.Drawing.Point(223, 232)
         Me.Animated.Margin = New System.Windows.Forms.Padding(2)
         Me.Animated.Name = "Animated"
         Me.Animated.Size = New System.Drawing.Size(77, 24)
@@ -846,7 +847,7 @@ Partial Class Form1
         '
         Me.ICANDO.AutoSize = True
         Me.ICANDO.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ICANDO.Location = New System.Drawing.Point(436, 148)
+        Me.ICANDO.Location = New System.Drawing.Point(419, 148)
         Me.ICANDO.Name = "ICANDO"
         Me.ICANDO.Size = New System.Drawing.Size(62, 13)
         Me.ICANDO.TabIndex = 218
@@ -897,7 +898,7 @@ Partial Class Form1
         Me.Sorry.Location = New System.Drawing.Point(765, 176)
         Me.Sorry.Margin = New System.Windows.Forms.Padding(2)
         Me.Sorry.Name = "Sorry"
-        Me.Sorry.Size = New System.Drawing.Size(92, 24)
+        Me.Sorry.Size = New System.Drawing.Size(93, 24)
         Me.Sorry.TabIndex = 232
         Me.Sorry.Text = "Sorry"
         Me.Sorry.UseVisualStyleBackColor = True
@@ -907,7 +908,7 @@ Partial Class Form1
         Me.HBU.Location = New System.Drawing.Point(765, 205)
         Me.HBU.Margin = New System.Windows.Forms.Padding(2)
         Me.HBU.Name = "HBU"
-        Me.HBU.Size = New System.Drawing.Size(92, 24)
+        Me.HBU.Size = New System.Drawing.Size(93, 24)
         Me.HBU.TabIndex = 233
         Me.HBU.Text = "How about you?"
         Me.HBU.UseVisualStyleBackColor = True
@@ -1011,37 +1012,37 @@ Partial Class Form1
         Me.MoveDrop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.MoveDrop.FormattingEnabled = True
         Me.MoveDrop.Items.AddRange(New Object() {"eyes", "mouth", "faces"})
-        Me.MoveDrop.Location = New System.Drawing.Point(497, 143)
+        Me.MoveDrop.Location = New System.Drawing.Point(480, 143)
         Me.MoveDrop.Name = "MoveDrop"
         Me.MoveDrop.Size = New System.Drawing.Size(65, 21)
         Me.MoveDrop.TabIndex = 248
         '
         'ImGood
         '
-        Me.ImGood.Location = New System.Drawing.Point(599, 114)
+        Me.ImGood.Location = New System.Drawing.Point(576, 113)
         Me.ImGood.Margin = New System.Windows.Forms.Padding(2)
         Me.ImGood.Name = "ImGood"
-        Me.ImGood.Size = New System.Drawing.Size(64, 24)
+        Me.ImGood.Size = New System.Drawing.Size(41, 24)
         Me.ImGood.TabIndex = 249
-        Me.ImGood.Text = "I'm good"
+        Me.ImGood.Text = "Good"
         Me.ImGood.UseVisualStyleBackColor = True
         '
         'ImOkay
         '
-        Me.ImOkay.Location = New System.Drawing.Point(667, 114)
+        Me.ImOkay.Location = New System.Drawing.Point(621, 113)
         Me.ImOkay.Margin = New System.Windows.Forms.Padding(2)
         Me.ImOkay.Name = "ImOkay"
-        Me.ImOkay.Size = New System.Drawing.Size(64, 24)
+        Me.ImOkay.Size = New System.Drawing.Size(45, 24)
         Me.ImOkay.TabIndex = 250
-        Me.ImOkay.Text = "I'm okay"
+        Me.ImOkay.Text = "Okay"
         Me.ImOkay.UseVisualStyleBackColor = True
         '
         'NotGreat
         '
-        Me.NotGreat.Location = New System.Drawing.Point(599, 145)
+        Me.NotGreat.Location = New System.Drawing.Point(670, 113)
         Me.NotGreat.Margin = New System.Windows.Forms.Padding(2)
         Me.NotGreat.Name = "NotGreat"
-        Me.NotGreat.Size = New System.Drawing.Size(75, 24)
+        Me.NotGreat.Size = New System.Drawing.Size(66, 24)
         Me.NotGreat.TabIndex = 251
         Me.NotGreat.Text = "Not great"
         Me.NotGreat.UseVisualStyleBackColor = True
@@ -1057,18 +1058,9 @@ Partial Class Form1
         Me.DelayClear.Text = "Clear"
         Me.DelayClear.UseVisualStyleBackColor = False
         '
-        'NotGreatCont
-        '
-        Me.NotGreatCont.Location = New System.Drawing.Point(679, 145)
-        Me.NotGreatCont.Name = "NotGreatCont"
-        Me.NotGreatCont.Size = New System.Drawing.Size(52, 24)
-        Me.NotGreatCont.TabIndex = 253
-        Me.NotGreatCont.Text = "(cont'd)"
-        Me.NotGreatCont.UseVisualStyleBackColor = True
-        '
         'MeToo
         '
-        Me.MeToo.Location = New System.Drawing.Point(766, 235)
+        Me.MeToo.Location = New System.Drawing.Point(766, 234)
         Me.MeToo.Margin = New System.Windows.Forms.Padding(2)
         Me.MeToo.Name = "MeToo"
         Me.MeToo.Size = New System.Drawing.Size(91, 24)
@@ -1097,7 +1089,7 @@ Partial Class Form1
         '
         'Maybe
         '
-        Me.Maybe.Location = New System.Drawing.Point(765, 115)
+        Me.Maybe.Location = New System.Drawing.Point(765, 114)
         Me.Maybe.Margin = New System.Windows.Forms.Padding(2)
         Me.Maybe.Name = "Maybe"
         Me.Maybe.Size = New System.Drawing.Size(93, 24)
@@ -1206,7 +1198,7 @@ Partial Class Form1
         '
         Me.Label20.AutoSize = True
         Me.Label20.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label20.Location = New System.Drawing.Point(436, 182)
+        Me.Label20.Location = New System.Drawing.Point(419, 182)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(35, 13)
         Me.Label20.TabIndex = 268
@@ -1216,7 +1208,7 @@ Partial Class Form1
         '
         Me.Label21.AutoSize = True
         Me.Label21.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label21.Location = New System.Drawing.Point(596, 66)
+        Me.Label21.Location = New System.Drawing.Point(573, 66)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(82, 13)
         Me.Label21.TabIndex = 269
@@ -1224,7 +1216,7 @@ Partial Class Form1
         '
         'Bye
         '
-        Me.Bye.Location = New System.Drawing.Point(439, 203)
+        Me.Bye.Location = New System.Drawing.Point(422, 203)
         Me.Bye.Margin = New System.Windows.Forms.Padding(2)
         Me.Bye.Name = "Bye"
         Me.Bye.Size = New System.Drawing.Size(123, 24)
@@ -1234,7 +1226,7 @@ Partial Class Form1
         '
         'SeeYou
         '
-        Me.SeeYou.Location = New System.Drawing.Point(439, 232)
+        Me.SeeYou.Location = New System.Drawing.Point(422, 232)
         Me.SeeYou.Margin = New System.Windows.Forms.Padding(2)
         Me.SeeYou.Name = "SeeYou"
         Me.SeeYou.Size = New System.Drawing.Size(123, 24)
@@ -1244,37 +1236,37 @@ Partial Class Form1
         '
         'HowAreYou
         '
-        Me.HowAreYou.Location = New System.Drawing.Point(599, 85)
+        Me.HowAreYou.Location = New System.Drawing.Point(576, 85)
         Me.HowAreYou.Margin = New System.Windows.Forms.Padding(2)
         Me.HowAreYou.Name = "HowAreYou"
-        Me.HowAreYou.Size = New System.Drawing.Size(132, 24)
+        Me.HowAreYou.Size = New System.Drawing.Size(160, 24)
         Me.HowAreYou.TabIndex = 272
         Me.HowAreYou.Text = "How are you?"
         Me.HowAreYou.UseVisualStyleBackColor = True
         '
         'TodayQ
         '
-        Me.TodayQ.Location = New System.Drawing.Point(599, 176)
+        Me.TodayQ.Location = New System.Drawing.Point(576, 143)
         Me.TodayQ.Margin = New System.Windows.Forms.Padding(2)
         Me.TodayQ.Name = "TodayQ"
-        Me.TodayQ.Size = New System.Drawing.Size(132, 24)
+        Me.TodayQ.Size = New System.Drawing.Size(160, 24)
         Me.TodayQ.TabIndex = 273
         Me.TodayQ.Text = "What did you do today?"
         Me.TodayQ.UseVisualStyleBackColor = True
         '
         'TodayA
         '
-        Me.TodayA.Location = New System.Drawing.Point(599, 206)
+        Me.TodayA.Location = New System.Drawing.Point(576, 172)
         Me.TodayA.Margin = New System.Windows.Forms.Padding(2)
         Me.TodayA.Name = "TodayA"
-        Me.TodayA.Size = New System.Drawing.Size(75, 24)
+        Me.TodayA.Size = New System.Drawing.Size(103, 24)
         Me.TodayA.TabIndex = 274
         Me.TodayA.Text = "Today, I..."
         Me.TodayA.UseVisualStyleBackColor = True
         '
         'TodayACont
         '
-        Me.TodayACont.Location = New System.Drawing.Point(679, 206)
+        Me.TodayACont.Location = New System.Drawing.Point(684, 172)
         Me.TodayACont.Name = "TodayACont"
         Me.TodayACont.Size = New System.Drawing.Size(52, 24)
         Me.TodayACont.TabIndex = 275
@@ -1550,16 +1542,6 @@ Partial Class Form1
         Me.Label19.TabIndex = 267
         Me.Label19.Text = "NAME"
         '
-        'AboutYrslf
-        '
-        Me.AboutYrslf.Location = New System.Drawing.Point(599, 235)
-        Me.AboutYrslf.Margin = New System.Windows.Forms.Padding(2)
-        Me.AboutYrslf.Name = "AboutYrslf"
-        Me.AboutYrslf.Size = New System.Drawing.Size(132, 24)
-        Me.AboutYrslf.TabIndex = 330
-        Me.AboutYrslf.Text = "Tell me about yourself"
-        Me.AboutYrslf.UseVisualStyleBackColor = True
-        '
         'ConvoAsk
         '
         Me.ConvoAsk.Location = New System.Drawing.Point(430, 454)
@@ -1578,14 +1560,44 @@ Partial Class Form1
         Me.FaveAsk.Text = "Ask"
         Me.FaveAsk.UseVisualStyleBackColor = True
         '
+        'SmallTalkBox
+        '
+        Me.SmallTalkBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.SmallTalkBox.FormattingEnabled = True
+        Me.SmallTalkBox.Items.AddRange(New Object() {"Tell me about yourself", "Have any brothers/sisters?", "Have any pets?", "When is your birthday?", "What grade are you in?", "What breakfast today?", "What did in school today?"})
+        Me.SmallTalkBox.Location = New System.Drawing.Point(576, 202)
+        Me.SmallTalkBox.Name = "SmallTalkBox"
+        Me.SmallTalkBox.Size = New System.Drawing.Size(160, 21)
+        Me.SmallTalkBox.TabIndex = 334
+        '
+        'SmallTalkAsk
+        '
+        Me.SmallTalkAsk.Location = New System.Drawing.Point(576, 231)
+        Me.SmallTalkAsk.Name = "SmallTalkAsk"
+        Me.SmallTalkAsk.Size = New System.Drawing.Size(79, 24)
+        Me.SmallTalkAsk.TabIndex = 335
+        Me.SmallTalkAsk.Text = "Ask"
+        Me.SmallTalkAsk.UseVisualStyleBackColor = True
+        '
+        'SmallTalkAns
+        '
+        Me.SmallTalkAns.Location = New System.Drawing.Point(661, 231)
+        Me.SmallTalkAns.Name = "SmallTalkAns"
+        Me.SmallTalkAns.Size = New System.Drawing.Size(75, 24)
+        Me.SmallTalkAns.TabIndex = 336
+        Me.SmallTalkAns.Text = "Answer"
+        Me.SmallTalkAns.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1019, 643)
+        Me.Controls.Add(Me.SmallTalkAns)
+        Me.Controls.Add(Me.SmallTalkAsk)
+        Me.Controls.Add(Me.SmallTalkBox)
         Me.Controls.Add(Me.FaveAsk)
         Me.Controls.Add(Me.ConvoAsk)
-        Me.Controls.Add(Me.AboutYrslf)
         Me.Controls.Add(Me.Label26)
         Me.Controls.Add(Me.Why)
         Me.Controls.Add(Me.TellMore)
@@ -1636,7 +1648,6 @@ Partial Class Form1
         Me.Controls.Add(Me.Story2)
         Me.Controls.Add(Me.Label11)
         Me.Controls.Add(Me.MeToo)
-        Me.Controls.Add(Me.NotGreatCont)
         Me.Controls.Add(Me.DelayClear)
         Me.Controls.Add(Me.NotGreat)
         Me.Controls.Add(Me.ImOkay)
@@ -1823,7 +1834,6 @@ Partial Class Form1
     Friend WithEvents ImOkay As System.Windows.Forms.Button
     Friend WithEvents NotGreat As System.Windows.Forms.Button
     Friend WithEvents DelayClear As System.Windows.Forms.Button
-    Friend WithEvents NotGreatCont As System.Windows.Forms.Button
     Friend WithEvents MeToo As System.Windows.Forms.Button
     Friend WithEvents Label11 As System.Windows.Forms.Label
     Friend WithEvents Story2 As System.Windows.Forms.Button
@@ -1874,8 +1884,10 @@ Partial Class Form1
     Friend WithEvents TellMore As System.Windows.Forms.Button
     Friend WithEvents Why As System.Windows.Forms.Button
     Friend WithEvents Label19 As System.Windows.Forms.Label
-    Friend WithEvents AboutYrslf As System.Windows.Forms.Button
     Friend WithEvents ConvoAsk As System.Windows.Forms.Button
     Friend WithEvents FaveAsk As System.Windows.Forms.Button
+    Friend WithEvents SmallTalkBox As System.Windows.Forms.ComboBox
+    Friend WithEvents SmallTalkAsk As System.Windows.Forms.Button
+    Friend WithEvents SmallTalkAns As System.Windows.Forms.Button
 
 End Class

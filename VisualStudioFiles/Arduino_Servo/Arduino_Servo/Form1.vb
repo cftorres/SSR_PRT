@@ -288,28 +288,62 @@ Public Class Form1
     Private Sub ImOkay_Click(sender As Object, e As EventArgs) Handles ImOkay.Click
         SpeakString("I'm okay", -2, 100, True)
     End Sub
-
     Private Sub NotGreat_Click(sender As Object, e As EventArgs) Handles NotGreat.Click
-        SpeakString("Not great.", -2, 100, True)
+        SpeakString("Not great.  I'm having trouble figuring out some math problems I was assigned", -2, 100, True)
+    End Sub
+    Private Sub SmallTalkAsk_Click(sender As Object, e As EventArgs) Handles SmallTalkAsk.Click
+        Dim message1, message2 As String
+        message1 = SmallTalkBox.Text
+        If message1 = "Tell me about yourself" Then
+            message2 = message1
+        ElseIf message1 = "Have any brothers/sisters?" Then
+            message2 = "Do you have any brothers or sisters?"
+        ElseIf message1 = "Have any pets?" Then
+            message2 = "Do you have any pets?"
+        ElseIf message1 = "When is your birthday?" Then
+            message2 = message1
+        ElseIf message1 = "What grade are you in?" Then
+            message2 = message1
+        ElseIf message1 = "What breakfast today?" Then
+            message2 = "What did you have for breakfast today?"
+        ElseIf message1 = "What did in school today?" Then
+            message2 = "What did you do in school today?"
+        End If
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
     End Sub
 
-    Private Sub NotGreatCont_Click(sender As Object, e As EventArgs) Handles NotGreatCont.Click
-        SpeakString("I had too much math homework and I couldn't figure out a bunch of the problems", -2, 100, True)
+    Private Sub SmallTalkAns_Click(sender As Object, e As EventArgs) Handles SmallTalkAns.Click
+        Dim message1, message2 As String
+        message1 = SmallTalkBox.Text
+        If message1 = "Tell me about yourself" Then
+            message2 = "Well, I love reading and watching TV.  I can't do everything humans can do because I'm a robot, but I love playing wit humans like you!"
+        ElseIf message1 = "Have any brothers/sisters?" Then
+            message2 = "Robots don't really have brothers and sisters, but there are others like me out there! I like to think of them as my brothers and sisters."
+        ElseIf message1 = "Have any pets?" Then
+            message2 = "I wish! I think dogs are really fun."
+        ElseIf message1 = "When is your birthday?" Then
+            message2 = "I was created on May 15"
+        ElseIf message1 = "What grade are you in?" Then
+            message2 = "Robots can go to school with kids from all different grades, but I'm eight!"
+        ElseIf message1 = "What breakfast today?" Then
+            message2 = "I didn't have breakfast today, but I love doughnuts!"
+        ElseIf message1 = "What did in school today?" Then
+            message2 = "Today, I learned about the sea.  Did you know that a shark is the only known fish that can blink with both eyes?"
+        End If
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
     End Sub
-
     Private Sub TodayQ_Click(sender As Object, e As EventArgs) Handles TodayQ.Click
         SpeakString("What did you do today?", -2, 100, True)
     End Sub
-
     Private Sub TodayA_Click(sender As Object, e As EventArgs) Handles TodayA.Click
-        SpeakString("Today, I went to the park", -2, 100, True)
+        SpeakString("Today I went to the park.", -2, 100, True)
     End Sub
-
     Private Sub TodayACont_Click(sender As Object, e As EventArgs) Handles TodayACont.Click
-        SpeakString("There was some really cool music playing in the park", -2, 100, True)
-    End Sub
-    Private Sub AboutYrslf_Click(sender As Object, e As EventArgs) Handles AboutYrslf.Click
-        SpeakString("Tell me about yourself!")
+        SpeakString("There was some really cool music playing in the park.  It was fun!", -2, 100, True)
     End Sub
 #End Region
 
@@ -1207,7 +1241,7 @@ Public Class Form1
 
                 'Special Cases
             Case "why"
-                NotGreatCont_Click(Nothing, Nothing)
+                'NotGreatCont_Click(Nothing, Nothing)
         End Select
     End Sub
 
