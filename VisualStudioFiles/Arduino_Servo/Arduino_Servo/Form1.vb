@@ -7,9 +7,9 @@ Imports System.IO.Ports
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Speech.Synthesis
 Imports System.Text
-Imports System.Threading
 Imports Fleck
 Imports Microsoft.VisualBasic.FileIO
+Imports System.Threading
 
 Public Class Form1
     Shared _continue As Boolean
@@ -45,7 +45,7 @@ Public Class Form1
         SerialPort1.StopBits = StopBits.One
         SerialPort1.Handshake = Handshake.None
         SerialPort1.Encoding = Encoding.Default
-        Thread.Sleep(1000)
+        Threading.Thread.Sleep(1000)
         Try
             SendCommand("2")
         Catch ex As Exception
@@ -333,44 +333,44 @@ Public Class Form1
         SendCommand("9")
         Thread.Sleep(2000)          'Hi L-E. How are you?
         SendCommand("0")            'smiles
-        SpeakString(string2say)     'Hello. I'm good.
+        SpeakStringSync(string2say)     'Hello. I'm good.
         Thread.Sleep(1700)          'What did you do this weekend? 
-        SpeakString(string2say2)    'I went to my friend’s birthday party.
+        SpeakStringSync(string2say2)    'I went to my friend’s birthday party.
         Thread.Sleep(3250)          'Oh yeah? Was it fun? What did you do?
         SendCommand("3")            'blinks
-        SpeakString(string2say3)    'Yeah
+        SpeakStringSync(string2say3)    'Yeah
         Thread.Sleep(6000)          'So what did you do at the party? (long pause)... L-E?
-        SpeakString(string2say4)    'I went to a pool party and I swam and I ate pizza and cake.
+        SpeakStringSync(string2say4)    'I went to a pool party and I swam and I ate pizza and cake.
         Thread.Sleep(2750)          'That’s cool, what’s your favorite kind of cake?
-        SpeakString(string2say5)    'Yeah, I played on the playground. The slide was very big.
+        SpeakStringSync(string2say5)    'Yeah, I played on the playground. The slide was very big.
         SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(3000)          'Oh, but what’s your favorite kind of cake?
         SendCommand("3")            'blinks
         Thread.Sleep(500)           'pause to finish blinking
-        SpeakString(string2say6)    'Chocolate.
+        SpeakStringSync(string2say6)    'Chocolate.
         Thread.Sleep(2000)          'Can I tell you about my weekend?
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1000)          'pause to finish turning
-        SpeakString(string2say7)    'Okay
+        SpeakStringSync(string2say7)    'Okay
         Thread.Sleep(500)           'I went to the--
-        SpeakString(string2say8)    'Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball.
+        SpeakStringSync(string2say8)    'Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball.
         Thread.Sleep(4000)          'That’s very nice, L-E. Can I finish telling you about my weekend?
-        SpeakString(string2say9)    'Okay
+        SpeakStringSync(string2say9)    'Okay
         Thread.Sleep(4250)          'I went to the beach, and I fed seagulls and found some really pretty seashells.
         SendCommand("3")            'blinks
         SendCommand("B")            'looks away
         SendCommand("8")            'looks away
         Thread.Sleep(800)           'pause for motors to finish
-        SpeakString(string2say10)   'That's nice 
+        SpeakStringSync(string2say10)   'That's nice 
         Thread.Sleep(1800)          'Yeah. Do you like going to the beach?
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(500)           'pause to finish turning
-        SpeakString(string2say11)   'Oh yeah. And this weekend, I saw a really cool car.
+        SpeakStringSync(string2say11)   'Oh yeah. And this weekend, I saw a really cool car.
         Thread.Sleep(4250)          'Oh, that’s fun.  But I was asking if you like the beach…
-        SpeakString(string2say12)   'Yes
+        SpeakStringSync(string2say12)   'Yes
         Thread.Sleep(3000)          'Great. Maybe one day, we can take a trip to the beach together!
     End Sub
 
@@ -398,42 +398,42 @@ Public Class Form1
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(3000)          'What’s your favorite video game, L-E?
-        SpeakString(string2say)     'I like to play Super Mario Bros.
+        SpeakStringSync(string2say)     'I like to play Super Mario Bros.
         Thread.Sleep(2500)          'How cool!  Who’s your favorite character?
-        SpeakString(string2say2)    'I also like this cool Lego game.
+        SpeakStringSync(string2say2)    'I also like this cool Lego game.
         Thread.Sleep(3500)          'That’s nice, but who’s your favorite character in Mario Bros?
-        SpeakString(string2say3)    'Luigi.
+        SpeakStringSync(string2say3)    'Luigi.
         Thread.Sleep(2750)          'I see.  And why is he your favorite?
-        SpeakString(string2say4)    'I like him.
+        SpeakStringSync(string2say4)    'I like him.
         Thread.Sleep(2000)          'Yes, why do you like him?
         SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        SpeakString(string2say5)    'My favorite color is green.
+        SpeakStringSync(string2say5)    'My favorite color is green.
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1150)          'Awesome.  My favorite color--
-        SpeakString(string2say6)    'Oh yeah, in the Lego Game my character is also green.
+        SpeakStringSync(string2say6)    'Oh yeah, in the Lego Game my character is also green.
         Thread.Sleep(7000)          'That’s nice, L-E.  I was just saying that my favorite color is also green... (long pause)
         SendCommand("3")            'blink eyes
         Thread.Sleep(600)           'pause for motors 
-        SpeakString(string2say7)    'Wow, we have the same favorite color.
+        SpeakStringSync(string2say7)    'Wow, we have the same favorite color.
         Thread.Sleep(4250)          'Yeah! So what else do you like to do when you’re not playing video games?
         SendCommand("B")            'looks away
         SendCommand("8")
-        SpeakString(string2say8)    'I like watching TV.
+        SpeakStringSync(string2say8)    'I like watching TV.
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(3000)          'Cool!  What's your favorite TV show? 
-        SpeakString(string2say9)    'Phineas and Ferb.
+        SpeakStringSync(string2say9)    'Phineas and Ferb.
         Thread.Sleep(1750)          'Oh yeah? Why is that?           
-        SpeakString(string2say10)   'Yeah.
+        SpeakStringSync(string2say10)   'Yeah.
         Thread.Sleep(2000)          'Why do you like that show, L-E?
-        SpeakString(string2say11)   'Summer is the best time of the year.
+        SpeakStringSync(string2say11)   'Summer is the best time of the year.
         Thread.Sleep(4250)          'I agree! Do you ever do cool things like Phineas and Ferb over the summer?
-        SpeakString(string2say12)   'Oh yeah.  I also really like the movie “Despicable Me”
+        SpeakStringSync(string2say12)   'Oh yeah.  I also really like the movie “Despicable Me”
         Thread.Sleep(6000)          'That’s nice, L-E.  I just saw that movie too, but I was just asking you what you do in the summer…
-        SpeakString(string2say13)   'I like to play with my toys.
+        SpeakStringSync(string2say13)   'I like to play with my toys.
         Thread.Sleep(3000)          'How nice! Toys are always fun!
     End Sub
 
@@ -464,44 +464,44 @@ Public Class Form1
         SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        SpeakString(string2say)     'School is fun sometimes.
+        SpeakStringSync(string2say)     'School is fun sometimes.
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(2000)          'Oh yeah?  What do you like to do at school?
-        SpeakString(string2say2)    'I like recess.
+        SpeakStringSync(string2say2)    'I like recess.
         Thread.Sleep(1000)          'I love recess too. What's your fav--
-        SpeakString(string2say3)    'I hate math.
+        SpeakStringSync(string2say3)    'I hate math.
         Thread.Sleep(2000)          'Why do you hate math?
         speaker.Rate = -8
-        SpeakString(string2say4)    'Uhh yeah.
+        SpeakStringSync(string2say4)    'Uhh yeah.
         speaker.Rate = -2
         SendCommand("3")            'blink
         Thread.Sleep(1000)          'L-E? Why don't you like math?
         SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        SpeakString(string2say5)    'Math is boring.
+        SpeakStringSync(string2say5)    'Math is boring.
         Thread.Sleep(1000)          'stay turned for a second
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(5750)          'Well that’s too bad.  I really liked math... (long pause) 
-        SpeakString(string2say6)    'Yeah, well, I don't like doing math homework.
+        SpeakStringSync(string2say6)    'Yeah, well, I don't like doing math homework.
         Thread.Sleep(2000)          'Well how do you like your teacher?
         SendCommand("3")            'blink
         Thread.Sleep(600)           'pause for motors 
-        SpeakString(string2say7)    'Yeah
+        SpeakStringSync(string2say7)    'Yeah
         Thread.Sleep(4750)          'Yeah, you like her? Can you tell me a bit more about your teacher?
-        SpeakString(string2say8)    'I like her a lot. She’s my favorite teacher so far.
+        SpeakStringSync(string2say8)    'I like her a lot. She’s my favorite teacher so far.
         Thread.Sleep(2600)          'That's great.  What's her name?
-        SpeakString(string2say9)    'Mrs. Peterson. She gives me a lot of stickers.
+        SpeakStringSync(string2say9)    'Mrs. Peterson. She gives me a lot of stickers.
         Thread.Sleep(2500)          'Oh! What kind of stickers?
-        SpeakString(string2say10)   'Once, Mrs. Peterson made cookies for the class.
+        SpeakStringSync(string2say10)   'Once, Mrs. Peterson made cookies for the class.
         Thread.Sleep(5750)          'That’s really nice of Mrs. Peterson, but I was just asking you about what kind of stickers you like?
-        SpeakString(string2say11)   'I like the scratch and sniff stickers
+        SpeakStringSync(string2say11)   'I like the scratch and sniff stickers
         Thread.Sleep(3000)          'Those are fun stickers! I love animal stickers.
-        SpeakString(string2say12)   'Do you love cookies?  I love cookies!
+        SpeakStringSync(string2say12)   'Do you love cookies?  I love cookies!
         Thread.Sleep(2500)          'Oh! Uh... me too!
-        SpeakString(string2say13)   'Does that mean we can have some now?
+        SpeakStringSync(string2say13)   'Does that mean we can have some now?
         SendCommand("E")            'wink
         Thread.Sleep(3000)          'No, I don't think so, L-E...  Maybe next time! 
     End Sub
@@ -531,45 +531,45 @@ Public Class Form1
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(5000)          'So, L-E, do you have any idea what you want to be when you grow up?
-        SpeakString(string2say)     'Yes. I would like to be a doctor one day.
+        SpeakStringSync(string2say)     'Yes. I would like to be a doctor one day.
         Thread.Sleep(900)           'That's awesome. Why do you wan--
-        SpeakString(string2say2)    'I’ve wanted to be a doctor ever since I got my first toy doctor kit.
+        SpeakStringSync(string2say2)    'I’ve wanted to be a doctor ever since I got my first toy doctor kit.
         Thread.Sleep(3000)          'Oh yeah? How old were you when you got it?
-        SpeakString(string2say3)    'I got it when I was five.
+        SpeakStringSync(string2say3)    'I got it when I was five.
         Thread.Sleep(6000)          'Nice... I've never seen a toy doctor kit.  Can you tell me more about what it has?
-        SpeakString(string2say4)    'It has a stethoscope, thermometer, bandages... Stuff like that.
+        SpeakStringSync(string2say4)    'It has a stethoscope, thermometer, bandages... Stuff like that.
         Thread.Sleep(2850)          'That's so cool! Who got you that doctor kit?
-        SpeakString(string2say5)    'I really like helping people and making them feel better.
+        SpeakStringSync(string2say5)    'I really like helping people and making them feel better.
         Thread.Sleep(5500)          'Yeah that’s nice, but I was wondering who got you that doctor kit... Do you know any doctors?
         SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors
-        SpeakString(string2say6)    'I have a friend who is a doctor. She’s awesome.
+        SpeakStringSync(string2say6)    'I have a friend who is a doctor. She’s awesome.
         Thread.Sleep(1000)          'pause in that position for a sec 
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1500)          'That’s great! What kind of doctor is your friend?
-        SpeakString(string2say7)    'A heart doctor.
+        SpeakStringSync(string2say7)    'A heart doctor.
         Thread.Sleep(3500)          'Woah, cool! What kind of doctor do you want to be?
-        SpeakString(string2say8)    'Yeah.
+        SpeakStringSync(string2say8)    'Yeah.
         Thread.Sleep(2500)          'Soo... What kind of doctor do you want to be?
-        SpeakString(string2say9)    'A children’s doctor. 
+        SpeakStringSync(string2say9)    'A children’s doctor. 
         Thread.Sleep(2000)          'Oh wow! Why is that?
-        SpeakString(string2say10)   'Yeah.
+        SpeakStringSync(string2say10)   'Yeah.
         Thread.Sleep(1200)          'Yeah, why?
         SendCommand("B")            'looks away
         SendCommand("8")
-        SpeakString(string2say11)  'Because children are really cool.
+        SpeakStringSync(string2say11)  'Because children are really cool.
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(5000)          'That is true! Children's doctors are also cool. Do you like your doctor?
-        SpeakString(string2say12)   'My friend has a cool model of a heart in her office, and once, she let me play with it!
+        SpeakStringSync(string2say12)   'My friend has a cool model of a heart in her office, and once, she let me play with it!
         Thread.Sleep(4000)          'That sounds pretty neat, but I was just asking you if you liked your doctor.
         SendCommand("3")            'blink
         Thread.Sleep(3000)          'long pause
-        SpeakString(string2say13)   'Yeah. He gives me lollipops. 
+        SpeakStringSync(string2say13)   'Yeah. He gives me lollipops. 
         Thread.Sleep(2000)          'Nice! I love lollipops! 
-        SpeakString(string2say14)   'Yeah. My favorite flavor is blue raspberry!
+        SpeakStringSync(string2say14)   'Yeah. My favorite flavor is blue raspberry!
         Thread.Sleep(2000)          'Oh! Me too!
     End Sub
 
@@ -593,29 +593,29 @@ Public Class Form1
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1000)          'Hi L-E. 
-        SpeakString(string2say)     'Hello
+        SpeakStringSync(string2say)     'Hello
         Thread.Sleep(2000)          'What's your favorite kind of food?
-        SpeakString(string2say2)    'I hate roller coasters
+        SpeakStringSync(string2say2)    'I hate roller coasters
         Thread.Sleep(4250)          'Oh, I don't like them either, but I was asking about your favorite kind of food
-        SpeakString(string2say3)    'I like chocolate cake
+        SpeakStringSync(string2say3)    'I like chocolate cake
         Thread.Sleep(1750)          'Oh, wow! Me too!
         SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors
-        SpeakString(string2say4)    'I espeecially like chocolate cake with peanut butter frosting
+        SpeakStringSync(string2say4)    'I espeecially like chocolate cake with peanut butter frosting
         Thread.Sleep(1000)          'pause in that position for a sec
         SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(2000)          'That sounds really good.  Do you love peanut butter?
-        SpeakString(string2say5)    'Yeah, peanut butter is the best!
+        SpeakStringSync(string2say5)    'Yeah, peanut butter is the best!
         Thread.Sleep(3000)          'I see! What do you like eating peanut butter with?
-        SpeakString(string2say6)    'Yeah.
+        SpeakStringSync(string2say6)    'Yeah.
         Thread.Sleep(6500)          'So do you eat peanut butter in sandwiches?... (long pause)
-        SpeakString(string2say7)    'Yes, PB&J sandwiches are my favorite kind of lunch
+        SpeakStringSync(string2say7)    'Yes, PB&J sandwiches are my favorite kind of lunch
         Thread.Sleep(1000)          'Nice. I like--
-        SpeakString(string2say8)    'Peanut butter cups are my favorite chocolate!
+        SpeakStringSync(string2say8)    'Peanut butter cups are my favorite chocolate!
         Thread.Sleep(5000)          'That's nice, L-E. I was just saying that I like to eat peanut butter sandwiches with bananas.
-        SpeakString(string2say9)    'That's interesting
+        SpeakStringSync(string2say9)    'That's interesting
         Thread.Sleep(500)           'Yup!
     End Sub
 
@@ -1025,11 +1025,20 @@ Public Class Form1
 
     Private Sub SpeakString(txt As String, Optional rate As Double = -2, Optional volume As Double = 100,
                             Optional resetTimers As Boolean = False)
-        If ResetTimers Then DisableTimers()
+        If resetTimers Then DisableTimers()
         speaker.Rate = rate
         speaker.Volume = volume
         speaker.SpeakAsync(txt)
-        If ResetTimers Then EnableTimers()
+        If resetTimers Then EnableTimers()
+    End Sub
+
+    Private Sub SpeakStringSync(txt As String, Optional rate As Double = -2, Optional volume As Double = 100,
+                            Optional resetTimers As Boolean = False)
+        If resetTimers Then DisableTimers()
+        speaker.Rate = rate
+        speaker.Volume = volume
+        speaker.Speak(txt)
+        If resetTimers Then EnableTimers()
     End Sub
 
     Private Sub TellFavorite(type As String)
