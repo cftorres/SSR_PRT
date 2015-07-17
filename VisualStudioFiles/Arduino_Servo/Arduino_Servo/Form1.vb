@@ -130,7 +130,7 @@ Public Class Form1
 
 #Region "Faces"
 
-    Private Sub neutral_Click(sender As Object, e As EventArgs) Handles neutral.Click, Timer3.Tick
+    Private Sub neutral_Click(sender As Object, e As EventArgs) Handles Timer3.Tick, neutral.Click
         SendCommand("2")
     End Sub
 
@@ -190,7 +190,7 @@ Public Class Form1
 
 #Region "Actions/Body Positions"
 
-    Private Sub blink_Click(sender As Object, e As EventArgs) Handles blink.Click, Timer1.Tick
+    Private Sub blink_Click(sender As Object, e As EventArgs) Handles Timer1.Tick, blink.Click
         SendCommand("3")
     End Sub
 
@@ -204,7 +204,7 @@ Public Class Form1
         EyeLeft.BackColor = Color.Gold
     End Sub
 
-    Private Sub HeadLeft_Click(sender As Object, e As EventArgs) Handles HeadLeft.Click, Timer2.Tick
+    Private Sub HeadLeft_Click(sender As Object, e As EventArgs) Handles Timer2.Tick, HeadLeft.Click
         SendCommand("A")
         HeadLeft.BackColor = Color.Gold
     End Sub
@@ -308,7 +308,9 @@ Public Class Form1
     Private Sub TodayACont_Click(sender As Object, e As EventArgs) Handles TodayACont.Click
         SpeakString("There was some really cool music playing in the park", -2, 100, True)
     End Sub
-
+    Private Sub AboutYrslf_Click(sender As Object, e As EventArgs) Handles AboutYrslf.Click
+        SpeakString("Tell me about yourself!")
+    End Sub
 #End Region
 
 #Region "Scripts"
@@ -321,56 +323,54 @@ Public Class Form1
         Dim string2say5 = "Yeah. I played on the playground. The slide was very big."
         Dim string2say6 = "Chocolate."
         Dim string2say7 = "Okay."
-        Dim string2say8 =
-                "Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball."
+        Dim string2say8 = "Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball."
         Dim string2say9 = "Okay."
         Dim string2say10 = "That's nice"
         Dim string2say11 = "Oh yeah. And this weekend, I saw a really cool car."
         Dim string2say12 = "Yes."
 
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(2000)          'Hi L-E. How are you?
-        SendCommand("0")      'smiles
-        SpeakString(string2say)   'Hello. I'm good.
+        SendCommand("0")            'smiles
+        SpeakString(string2say)     'Hello. I'm good.
         Thread.Sleep(1700)          'What did you do this weekend? 
-        SpeakString(string2say2)  'I went to my friend’s birthday party.
+        SpeakString(string2say2)    'I went to my friend’s birthday party.
         Thread.Sleep(3250)          'Oh yeah? Was it fun? What did you do?
-        SendCommand("3")      'blinks
-        SpeakString(string2say3)  'Yeah
+        SendCommand("3")            'blinks
+        SpeakString(string2say3)    'Yeah
         Thread.Sleep(6000)          'So what did you do at the party? (long pause)... L-E?
-        SpeakString(string2say4)  'I went to a pool party and I swam and I ate pizza and cake.
+        SpeakString(string2say4)    'I went to a pool party and I swam and I ate pizza and cake.
         Thread.Sleep(2750)          'That’s cool, what’s your favorite kind of cake?
-        SpeakString(string2say5)  'Yeah, I played on the playground. The slide was very big.
-        SendCommand("B")      'looks away
+        SpeakString(string2say5)    'Yeah, I played on the playground. The slide was very big.
+        SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(3000)          'Oh, but what’s your favorite kind of cake?
-        SendCommand("3")      'blinks
+        SendCommand("3")            'blinks
         Thread.Sleep(500)           'pause to finish blinking
-        SpeakString(string2say6)  'Chocolate.
+        SpeakString(string2say6)    'Chocolate.
         Thread.Sleep(2000)          'Can I tell you about my weekend?
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1000)          'pause to finish turning
-        SpeakString(string2say7)  'Okay
+        SpeakString(string2say7)    'Okay
         Thread.Sleep(500)           'I went to the--
-        SpeakString(string2say8) _
-        'Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball.
+        SpeakString(string2say8)    'Oh yeah, and I also played with my friend Jimmy. We went off the diving board. I did a cannon ball.
         Thread.Sleep(4000)          'That’s very nice, L-E. Can I finish telling you about my weekend?
-        SpeakString(string2say9)  'Okay
+        SpeakString(string2say9)    'Okay
         Thread.Sleep(4250)          'I went to the beach, and I fed seagulls and found some really pretty seashells.
-        SendCommand("3")      'blinks
-        SendCommand("B")      'looks away
-        SendCommand("8")      'looks away
+        SendCommand("3")            'blinks
+        SendCommand("B")            'looks away
+        SendCommand("8")            'looks away
         Thread.Sleep(800)           'pause for motors to finish
-        SpeakString(string2say10) 'That's nice 
+        SpeakString(string2say10)   'That's nice 
         Thread.Sleep(1800)          'Yeah. Do you like going to the beach?
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(500)           'pause to finish turning
-        SpeakString(string2say11) 'Oh yeah. And this weekend, I saw a really cool car.
+        SpeakString(string2say11)   'Oh yeah. And this weekend, I saw a really cool car.
         Thread.Sleep(4250)          'Oh, that’s fun.  But I was asking if you like the beach…
-        SpeakString(string2say12) 'Yes
+        SpeakString(string2say12)   'Yes
         Thread.Sleep(3000)          'Great. Maybe one day, we can take a trip to the beach together!
     End Sub
 
@@ -395,47 +395,45 @@ Public Class Form1
         Dim string2say12 = "Oh yeah.  I also really like the movie Despicable Me"
         Dim string2say13 = "I like to play with my toys"
 
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(3000)          'What’s your favorite video game, L-E?
-        SpeakString(string2say)   'I like to play Super Mario Bros.
+        SpeakString(string2say)     'I like to play Super Mario Bros.
         Thread.Sleep(2500)          'How cool!  Who’s your favorite character?
-        SpeakString(string2say2)  'I also like this cool Lego game.
+        SpeakString(string2say2)    'I also like this cool Lego game.
         Thread.Sleep(3500)          'That’s nice, but who’s your favorite character in Mario Bros?
-        SpeakString(string2say3)  'Luigi.
+        SpeakString(string2say3)    'Luigi.
         Thread.Sleep(2750)          'I see.  And why is he your favorite?
-        SpeakString(string2say4)  'I like him.
+        SpeakString(string2say4)    'I like him.
         Thread.Sleep(2000)          'Yes, why do you like him?
-        SendCommand("B")      'looks away
+        SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        SpeakString(string2say5)  'My favorite color is green.
-        SendCommand("A")      'turns to speaker
+        SpeakString(string2say5)    'My favorite color is green.
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1150)          'Awesome.  My favorite color--
-        SpeakString(string2say6)  'Oh yeah, in the Lego Game my character is also green.
-        Thread.Sleep(7000) _
-        'That’s nice, L-E.  I was just saying that my favorite color is also green... (long pause)
-        SendCommand("3")      'blink eyes
+        SpeakString(string2say6)    'Oh yeah, in the Lego Game my character is also green.
+        Thread.Sleep(7000)          'That’s nice, L-E.  I was just saying that my favorite color is also green... (long pause)
+        SendCommand("3")            'blink eyes
         Thread.Sleep(600)           'pause for motors 
-        SpeakString(string2say7)  'Wow, we have the same favorite color.
+        SpeakString(string2say7)    'Wow, we have the same favorite color.
         Thread.Sleep(4250)          'Yeah! So what else do you like to do when you’re not playing video games?
-        SendCommand("B")      'looks away
+        SendCommand("B")            'looks away
         SendCommand("8")
-        SpeakString(string2say8)  'I like watching TV.
-        SendCommand("A")      'turns to speaker
+        SpeakString(string2say8)    'I like watching TV.
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(3000)          'Cool!  What's your favorite TV show? 
-        SpeakString(string2say9)  'Phineas and Ferb.
+        SpeakString(string2say9)    'Phineas and Ferb.
         Thread.Sleep(1750)          'Oh yeah? Why is that?           
-        SpeakString(string2say10) 'Yeah.
+        SpeakString(string2say10)   'Yeah.
         Thread.Sleep(2000)          'Why do you like that show, L-E?
-        SpeakString(string2say11) 'Summer is the best time of the year.
+        SpeakString(string2say11)   'Summer is the best time of the year.
         Thread.Sleep(4250)          'I agree! Do you ever do cool things like Phineas and Ferb over the summer?
-        SpeakString(string2say12) 'Oh yeah.  I also really like the movie “Despicable Me”
-        Thread.Sleep(6000) _
-        'That’s nice, L-E.  I just saw that movie too, but I was just asking you what you do in the summer…
-        SpeakString(string2say13) 'I like to play with my toys.
+        SpeakString(string2say12)   'Oh yeah.  I also really like the movie “Despicable Me”
+        Thread.Sleep(6000)          'That’s nice, L-E.  I just saw that movie too, but I was just asking you what you do in the summer…
+        SpeakString(string2say13)   'I like to play with my toys.
         Thread.Sleep(3000)          'How nice! Toys are always fun!
     End Sub
 
@@ -460,53 +458,51 @@ Public Class Form1
         Dim string2say12 = "Do you love cookies? I love cookies!"
         Dim string2say13 = "Does that mean we can have some now?"
 
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1500)          'So how do you like school, L-E?
-        SendCommand("B")      'looks away
+        SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        SpeakString(string2say)   'School is fun sometimes.
-        SendCommand("A")      'turns to speaker
+        SpeakString(string2say)     'School is fun sometimes.
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(2000)          'Oh yeah?  What do you like to do at school?
-        SpeakString(string2say2)  'I like recess.
+        SpeakString(string2say2)    'I like recess.
         Thread.Sleep(1000)          'I love recess too. What's your fav--
-        SpeakString(string2say3)  'I hate math.
-        Thread.Sleep(2000)           'Why do you hate math?
+        SpeakString(string2say3)    'I hate math.
+        Thread.Sleep(2000)          'Why do you hate math?
         speaker.Rate = -8
-        SpeakString(string2say4)  'Uhh yeah.
+        SpeakString(string2say4)    'Uhh yeah.
         speaker.Rate = -2
-        SendCommand("3")      'blink
+        SendCommand("3")            'blink
         Thread.Sleep(1000)          'L-E? Why don't you like math?
-        SendCommand("B")      'looks away
+        SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors 
-        SpeakString(string2say5)  'Math is boring.
+        SpeakString(string2say5)    'Math is boring.
         Thread.Sleep(1000)          'stay turned for a second
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(5750)          'Well that’s too bad.  I really liked math... (long pause) 
-        SpeakString(string2say6)  'Yeah, well, I don't like doing math homework.
+        SpeakString(string2say6)    'Yeah, well, I don't like doing math homework.
         Thread.Sleep(2000)          'Well how do you like your teacher?
-        SendCommand("3")      'blink
+        SendCommand("3")            'blink
         Thread.Sleep(600)           'pause for motors 
-        SpeakString(string2say7)  'Yeah
+        SpeakString(string2say7)    'Yeah
         Thread.Sleep(4750)          'Yeah, you like her? Can you tell me a bit more about your teacher?
-        SpeakString(string2say8)  'I like her a lot. She’s my favorite teacher so far.
+        SpeakString(string2say8)    'I like her a lot. She’s my favorite teacher so far.
         Thread.Sleep(2600)          'That's great.  What's her name?
-        SpeakString(string2say9)  'Mrs. Peterson. She gives me a lot of stickers.
+        SpeakString(string2say9)    'Mrs. Peterson. She gives me a lot of stickers.
         Thread.Sleep(2500)          'Oh! What kind of stickers?
-        SpeakString(string2say10) 'Once, Mrs. Peterson made cookies for the class.
-        Thread.Sleep(5750) _
-        'That’s really nice of Mrs. Peterson, but I was just asking you about what kind of stickers you like?
-        SpeakString(string2say11) 'I like the scratch and sniff stickers
+        SpeakString(string2say10)   'Once, Mrs. Peterson made cookies for the class.
+        Thread.Sleep(5750)          'That’s really nice of Mrs. Peterson, but I was just asking you about what kind of stickers you like?
+        SpeakString(string2say11)   'I like the scratch and sniff stickers
         Thread.Sleep(3000)          'Those are fun stickers! I love animal stickers.
-        SpeakString(string2say12) 'Do you love cookies?  I love cookies!
+        SpeakString(string2say12)   'Do you love cookies?  I love cookies!
         Thread.Sleep(2500)          'Oh! Uh... me too!
-        SpeakString(string2say13) 'Does that mean we can have some now?
-        SendCommand("E")      'wink
-
+        SpeakString(string2say13)   'Does that mean we can have some now?
+        SendCommand("E")            'wink
         Thread.Sleep(3000)          'No, I don't think so, L-E...  Maybe next time! 
     End Sub
 
@@ -517,57 +513,64 @@ Public Class Form1
     End Sub
 
     Private Sub Thread4Task()
-        Dim string2say = "Yes. I would like to be a doctor one day."
-        Dim string2say2 = "I’ve wanted to be a doctor ever since I got my first toy doctor kit"
-        Dim string2say3 = "I really like helping people and making them feel better."
-        Dim string2say4 = "I have a friend who is a doctor. She’s awesome."
-        Dim string2say5 = "A heart doctor."
-        Dim string2say6 = "Yeah."
-        Dim string2say7 = "A children's doctor"
-        Dim string2say8 = "Yeah."
-        Dim string2say9 = "Because children are really cool."
-        Dim string2say10 = "My friend has a cool model of a heart in her office, and once she let me play with it."
-        Dim string2say11 = "Yeah, he gives me lollipops."
+        Dim string2say As String = "Yes. I would like to be a doctor one day."
+        Dim string2say2 As String = "I’ve wanted to be a doctor ever since I got my first toy doctor kit"
+        Dim string2say3 As String = "I got it when I was 5"
+        Dim string2say4 As String = "It has a stethoscope, thermometer, bandages...  Stuff like that"
+        Dim string2say5 As String = "I really like helping people and making them feel better."
+        Dim string2say6 As String = "I have a friend who is a doctor. She’s awesome."
+        Dim string2say7 As String = "A heart doctor."
+        Dim string2say8 As String = "Yeah."
+        Dim string2say9 As String = "A children's doctor"
+        Dim string2say10 As String = "Yeah."
+        Dim string2say11 As String = "Because children are really cool."
+        Dim string2say12 As String = "My friend has a cool model of a heart in her office, and once she let me play with it."
+        Dim string2say13 As String = "Yeah, he gives me lollipops."
+        Dim string2say14 As String = "Yeah. My favorite flavor is blue raspberry"
 
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(5000)          'So, L-E, do you have any idea what you want to be when you grow up?
-        SpeakString(string2say)   'Yes. I would like to be a doctor one day.
-        Thread.Sleep(900)          'That's awesome. Why do you wan--
-        SpeakString(string2say2)  'I’ve wanted to be a doctor ever since I got my first toy doctor kit.
-        Thread.Sleep(2800)          'That's great! Who got you that doctor kit?
-        SpeakString(string2say3)  'I really like helping people and making them feel better.
-        Thread.Sleep(5500) _
-        'Yeah that’s nice, but I was wondering who got you that doctor kit... Do you know any doctors?
-        SendCommand("B")      'looks away
+        SpeakString(string2say)     'Yes. I would like to be a doctor one day.
+        Thread.Sleep(900)           'That's awesome. Why do you wan--
+        SpeakString(string2say2)    'I’ve wanted to be a doctor ever since I got my first toy doctor kit.
+        Thread.Sleep(3000)          'Oh yeah? How old were you when you got it?
+        SpeakString(string2say3)    'I got it when I was five.
+        Thread.Sleep(6000)          'Nice... I've never seen a toy doctor kit.  Can you tell me more about what it has?
+        SpeakString(string2say4)    'It has a stethoscope, thermometer, bandages... Stuff like that.
+        Thread.Sleep(2850)          'That's so cool! Who got you that doctor kit?
+        SpeakString(string2say5)    'I really like helping people and making them feel better.
+        Thread.Sleep(5500)          'Yeah that’s nice, but I was wondering who got you that doctor kit... Do you know any doctors?
+        SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors
-        SpeakString(string2say4)  'I have a friend who is a doctor. She’s awesome.
+        SpeakString(string2say6)    'I have a friend who is a doctor. She’s awesome.
         Thread.Sleep(1000)          'pause in that position for a sec 
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1500)          'That’s great! What kind of doctor is your friend?
-        SpeakString(string2say5)  'A heart doctor.
+        SpeakString(string2say7)    'A heart doctor.
         Thread.Sleep(3500)          'Woah, cool! What kind of doctor do you want to be?
-        SpeakString(string2say6)  'Yeah.
+        SpeakString(string2say8)    'Yeah.
         Thread.Sleep(2500)          'Soo... What kind of doctor do you want to be?
-        SpeakString(string2say7)  'A children’s doctor. 
+        SpeakString(string2say9)    'A children’s doctor. 
         Thread.Sleep(2000)          'Oh wow! Why is that?
-        SpeakString(string2say8)  'Yeah.
+        SpeakString(string2say10)   'Yeah.
         Thread.Sleep(1200)          'Yeah, why?
-        SendCommand("B")      'looks away
+        SendCommand("B")            'looks away
         SendCommand("8")
-        SpeakString(string2say9)  'Because children are really cool.
-        SendCommand("A")      'turns to speaker
+        SpeakString(string2say11)  'Because children are really cool.
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
-        Thread.Sleep(3000)          'That is true! Do you like your doctor?
-        SpeakString(string2say10) _
-        'My friend has a cool model of a heart in her office, and once, she let me play with it!
+        Thread.Sleep(5000)          'That is true! Children's doctors are also cool. Do you like your doctor?
+        SpeakString(string2say12)   'My friend has a cool model of a heart in her office, and once, she let me play with it!
         Thread.Sleep(4000)          'That sounds pretty neat, but I was just asking you if you liked your doctor.
-        SendCommand("3")      'blink
+        SendCommand("3")            'blink
         Thread.Sleep(3000)          'long pause
-        SpeakString(string2say11) 'Yeah. He gives me lollipops. 
+        SpeakString(string2say13)   'Yeah. He gives me lollipops. 
         Thread.Sleep(2000)          'Nice! I love lollipops! 
+        SpeakString(string2say14)   'Yeah. My favorite flavor is blue raspberry!
+        Thread.Sleep(2000)          'Oh! Me too!
     End Sub
 
     Private Sub Script4_Click(sender As Object, e As EventArgs) Handles Script4.Click
@@ -587,33 +590,32 @@ Public Class Form1
         Dim string2say8 = "And Peanut butter cups are my favorite chocolate"
         Dim string2say9 = "That's interesting"
 
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(1000)          'Hi L-E. 
-        SpeakString(string2say)   'Hello
+        SpeakString(string2say)     'Hello
         Thread.Sleep(2000)          'What's your favorite kind of food?
-        SpeakString(string2say2)  'I hate roller coasters
+        SpeakString(string2say2)    'I hate roller coasters
         Thread.Sleep(4250)          'Oh, I don't like them either, but I was asking about your favorite kind of food
-        SpeakString(string2say3)  'I like chocolate cake
+        SpeakString(string2say3)    'I like chocolate cake
         Thread.Sleep(1750)          'Oh, wow! Me too!
-        SendCommand("B")      'looks away
+        SendCommand("B")            'looks away
         SendCommand("8")
         Thread.Sleep(1000)          'pause for motors
-        SpeakString(string2say4)  'I espeecially like chocolate cake with peanut butter frosting
+        SpeakString(string2say4)    'I espeecially like chocolate cake with peanut butter frosting
         Thread.Sleep(1000)          'pause in that position for a sec
-        SendCommand("A")      'turns to speaker
+        SendCommand("A")            'turns to speaker
         SendCommand("9")
         Thread.Sleep(2000)          'That sounds really good.  Do you love peanut butter?
-        SpeakString(string2say5)  'Yeah, peanut butter is the best!
+        SpeakString(string2say5)    'Yeah, peanut butter is the best!
         Thread.Sleep(3000)          'I see! What do you like eating peanut butter with?
-        SpeakString(string2say6)  'Yeah.
+        SpeakString(string2say6)    'Yeah.
         Thread.Sleep(6500)          'So do you eat peanut butter in sandwiches?... (long pause)
-        SpeakString(string2say7)  'Yes, PB&J sandwiches are my favorite kind of lunch
+        SpeakString(string2say7)    'Yes, PB&J sandwiches are my favorite kind of lunch
         Thread.Sleep(1000)          'Nice. I like--
-        SpeakString(string2say8)  'Peanut butter cups are my favorite chocolate!
-        Thread.Sleep(5000) _
-        'That's nice, L-E. I was just saying that I like to eat peanut butter sandwiches with bananas.
-        SpeakString(string2say9)  'That's interesting
+        SpeakString(string2say8)    'Peanut butter cups are my favorite chocolate!
+        Thread.Sleep(5000)          'That's nice, L-E. I was just saying that I like to eat peanut butter sandwiches with bananas.
+        SpeakString(string2say9)    'That's interesting
         Thread.Sleep(500)           'Yup!
     End Sub
 
@@ -711,59 +713,29 @@ Public Class Form1
         DontLikeBox.Clear()
     End Sub
 
-    Private Sub FaveSelect_Click(sender As Object, e As EventArgs) Handles Fave.SelectedIndexChanged
-        TellFavorite(Fave.Text)
-    End Sub
-
-    Private Sub FaveClear_Click(sender As Object, e As EventArgs) Handles FaveCont.Click
-        Dim message1 As String = Fave.Text
-        Dim message2 As String
-        If message1 = "animal" Then
-            message2 = "I love lions' roars!"
-        ElseIf message1 = "book" Then
-            message2 = "I love chocolate!"
-        ElseIf message1 = "color" Then
-            message2 = "My favorite character in Super Mario Bros is Luigi and he has a green cap"
-        ElseIf message1 = "flavor" Then
-            message2 = "I could eat chocolate for any meal!"
-        ElseIf message1 = "food" Then
-            message2 = "Chocolate cake's the best!"
-        ElseIf message1 = "game" Then
-            message2 = "I just love Luigi"
-        ElseIf message1 = "movie" Then
-            message2 = "It's about robots, like me!"
-        ElseIf message1 = "sport" Then
-            message2 =
-                "It's the greatest sport in the world.  But did you know they call it football in other countries?"
-        Else
-            message2 = "I never want summer to end!"
-        End If
-        SpeakString(message2)
-    End Sub
-
 #End Region
 
 #Region "Conversation Repair"
 
-    Private Sub Recess1_Click(sender As Object, e As EventArgs) Handles Recess1.Click
+    Private Sub Zoo1_Click(sender As Object, e As EventArgs) Handles Zoo1.Click
         DisableTimers()
         SendCommand("R")
-        SpeakString("I love recess.")
-        Recess1.BackColor = Color.Gold
+        SpeakString("The zoo is fun.")
+        Zoo1.BackColor = Color.Gold
         EnableTimers()
     End Sub
 
-    Private Sub Recess2_Click(sender As Object, e As EventArgs) Handles Recess2.Click
-        SpeakString("Playing in the playground is always fun!", -2, 100, True)
+    Private Sub Zoo2_Click(sender As Object, e As EventArgs) Handles Zoo2.Click
+        SpeakString("I feel bad for the polar bears.  I hope they don't melt in the zoo, but they're my favorite part!", -2, 100, True)
     End Sub
 
-    Private Sub History1_Click(sender As Object, e As EventArgs) Handles History1.Click
-        SpeakString("History is pretty boring", 0.5, 100, True)
-        History1.BackColor = Color.Gold
+    Private Sub ImSleepy1_Click(sender As Object, e As EventArgs) Handles ImSleepy1.Click
+        SpeakString("I'm sleepy today", 0.5, 100, True)
+        ImSleepy1.BackColor = Color.Gold
     End Sub
 
-    Private Sub History2_Click(sender As Object, e As EventArgs) Handles History2.Click
-        SpeakString("It's not fun memorizing facts about old people", -2, 100, True)
+    Private Sub ImSleepy2_Click(sender As Object, e As EventArgs) Handles ImSleepy2.Click
+        SpeakString("Sometimes I get so tired during the day, I just fall asleep", -2, 100, True)
     End Sub
 
     Private Sub Cookies1_Click(sender As Object, e As EventArgs) Handles Cookies1.Click
@@ -787,58 +759,48 @@ Public Class Form1
 #End Region
 
 #Region "Weekend"
-
-    Private Sub Beach1_Click(sender As Object, e As EventArgs) Handles Beach1.Click
-        SpeakString("This weekend I went to the beach", -2, 100, True)
+    Private Sub WkndBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles WkndBox.SelectedIndexChanged
+        Dim message1, message2 As String
+        message1 = WkndBox.Text
+        If message1 = "beach" Then
+            message2 = "This weekend I went to the beach"
+        ElseIf message1 = "birthday party" Then
+            message2 = "This weekend was my friend Charlie's birthday.  He had an awesome birthday party"
+        ElseIf message1 = "lego" Then
+            message2 = "This weekend I played with legos"
+        Else
+            message2 = "This weekend I played some video games."
+        End If
+        SpeakString(message2, -2, 100, True)
     End Sub
-
-    Private Sub Beach2_Click(sender As Object, e As EventArgs) Handles Beach2.Click
-        SpeakString("I always make sand castles when I go to the beach.  I'm a pro at a making sand castles!", -2, 100,
-                    True)
+    Private Sub WkndCont1_Click(sender As Object, e As EventArgs) Handles WkndCont1.Click
+        Dim message1 As String = WkndBox.Text
+        Dim message2 As String
+        If message1 = "beach" Then
+            message2 = "I always make sand castles when I go to the beach.  I'm a pro at a making sand castles!"
+        ElseIf message1 = "birthday party" Then
+            message2 = "We played some fun games and there was a cool robot dance"
+        ElseIf message1 = "lego" Then
+            message2 = "I built a really cool tower.  Next time I'm gonna build one so tall, it's going to be taller than this table!"
+        Else
+            message2 = "I played Mario Cart and beat my high score and made it to the next level!"
+        End If
+        SpeakString(message2, -2, 100, True)
     End Sub
-
-    Private Sub Beach3_Click(sender As Object, e As EventArgs) Handles Beach3.Click
-        SpeakString("I collect seashells so I love finding really cool seashells when I'm at the beach", -2, 100, True)
+    Private Sub WkndCont2_Click(sender As Object, e As EventArgs) Handles WkndCont2.Click
+        Dim message1 As String = WkndBox.Text
+        Dim message2 As String
+        If message1 = "beach" Then
+            message2 = "I collect seashells so I love finding really cool seashells when I'm at the beach"
+        ElseIf message1 = "birthday party" Then
+            message2 = "I ate really good cake at the party too!"
+        ElseIf message1 = "lego" Then
+            message2 = "Legos are really fun because you can build anything you want!"
+        Else
+            message2 = "I love playing racing games. I wish I could watch a car race in real life!"
+        End If
+        SpeakString(message2, -2, 100, True)
     End Sub
-
-    Private Sub Party1_Click(sender As Object, e As EventArgs) Handles Party1.Click
-        SpeakString("This weekend was my friend Charlie's birthday.  He had an awesome birthday party", -2, 100, True)
-    End Sub
-
-    Private Sub Party2_Click(sender As Object, e As EventArgs) Handles Party2.Click
-        SpeakString("We played some fun games and there was a cool robot dance", -2, 100, True)
-    End Sub
-
-    Private Sub Party3_Click(sender As Object, e As EventArgs) Handles Party3.Click
-        SpeakString("I ate really good cake at the party too!", -2, 100, True)
-    End Sub
-
-    Private Sub Game1_Click(sender As Object, e As EventArgs) Handles Game1.Click
-        SpeakString("This weekend I played some video games.", -2, 100, True)
-    End Sub
-
-    Private Sub Game2_Click(sender As Object, e As EventArgs) Handles Game2.Click
-        SpeakString("I played Mario Cart and beat my high score and made it to the next level!", -2, 100, True)
-    End Sub
-
-    Private Sub Game3_Click(sender As Object, e As EventArgs) Handles Game3.Click
-        SpeakString("I love playing racing games. I wish I could watch a car race in real life!", -2, 100, True)
-    End Sub
-
-    Private Sub Lego1_Click(sender As Object, e As EventArgs) Handles Lego1.Click
-        SpeakString("This weekend I played with legos", -2, 100, True)
-    End Sub
-
-    Private Sub Lego2_Click(sender As Object, e As EventArgs) Handles Lego2.Click
-        SpeakString(
-            "I built a really cool tower.  Next time I'm gonna build one so tall, it's going to be taller than this table!",
-            -2, 100, True)
-    End Sub
-
-    Private Sub Lego3_Click(sender As Object, e As EventArgs) Handles Lego3.Click
-        SpeakString("Lego's are really fun because you can build anything you want!", -2, 100, True)
-    End Sub
-
 #End Region
 
 #Region "Responses"
@@ -863,8 +825,8 @@ Public Class Form1
         SpeakString("How about you?", -2, 100, True)
     End Sub
 
-    Private Sub Guess_Click(sender As Object, e As EventArgs) Handles Guess.Click
-        SpeakString("I guess", -2, 100, True)
+    Private Sub Guess_Click(sender As Object, e As EventArgs) Handles MeToo.Click
+        SpeakString("Me too", -2, 100, True)
     End Sub
 
     Private Sub Maybe_Click(sender As Object, e As EventArgs) Handles Maybe.Click
@@ -1206,7 +1168,7 @@ Public Class Form1
             Case "how are you doing"
                 NotGreat_Click(Nothing, Nothing)
             Case "what did you do this weekend"
-                Lego1_Click(Nothing, Nothing)
+                'Lego1_Click(Nothing, Nothing)
             Case "what did you do today"
                 TodayA_Click(Nothing, Nothing)
 
@@ -1396,6 +1358,240 @@ Public Class Form1
 
 #End Region
 
+#Region "School"
+    Private Sub SchoolBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SchoolBox.SelectedIndexChanged
+        Dim message1, message2 As String
+        message1 = SchoolBox.Text
+        If message1 = "fave subject" Then
+            message2 = "My favorite subject is English"
+        ElseIf message1 = "least fave subject" Then
+            message2 = "My least favorite subject is probably history"
+        ElseIf message1 = "recess" Then
+            message2 = "I love recess"
+        ElseIf message1 = "teacher" Then
+            message2 = "My teacher's pretty nice"
+        ElseIf message1 = "school's okay" Then
+            message2 = "School's okay"
+        End If
+        SpeakString(message2, -2, 100, True)
+    End Sub
+    Private Sub SchoolCont1_Click(sender As Object, e As EventArgs) Handles SchoolCont1.Click
+        Dim message1, message2 As String
+        message1 = SchoolBox.Text
+        If message1 = "fave subject" Then
+            message2 = "I really love reading books"
+        ElseIf message1 = "least fave subject" Then
+            message2 = "I find history really boring"
+        ElseIf message1 = "recess" Then
+            message2 = "Playing in the playground is always fun!"
+        ElseIf message1 = "teacher" Then
+            message2 = "She sometimes bakes for us"
+        ElseIf message1 = "school's okay" Then
+            message2 = "Sometimes it can be a little boring, but mostly it's not bad"
+        End If
+        If String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
+    End Sub
+
+    Private Sub SchoolCont2_Click(sender As Object, e As EventArgs) Handles SchoolCont2.Click
+        Dim message1, message2 As String
+        message1 = SchoolBox.Text
+        If message1 = "fave subject" Then
+            message2 = "My favorite is when my teacher reads us adventure stories!"
+        ElseIf message1 = "least fave subject" Then
+            message2 = "It's not fun memorizing facts about old people"
+        ElseIf message1 = "recess" Then
+            message2 = "I think the monkey bars are really cool"
+        ElseIf message1 = "teacher" Then
+            message2 = "Sometimes, if we're really good, she also lets us have a longer recess and snacktime!"
+        ElseIf message1 = "school's okay" Then
+            message2 = "Homework is the most annoying part, but learning is fun. I want to be really smart one day!"
+        End If
+        If String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
+    End Sub
+#End Region
+
+#Region "Summer"
+    Private Sub SummerBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SummerBox.SelectedIndexChanged
+        Timer1.Enabled = False
+        Timer2.Enabled = False
+        Timer3.Enabled = False
+        Dim message1, message2 As String
+        message1 = SummerBox.Text
+        If message1 = "pool" Then
+            message2 = "In the summer, I love going to the pool"
+        ElseIf message1 = "ice cream" Then
+            message2 = "My favorite part about summer is eating a lot of ice cream"
+        ElseIf message1 = "vacation" Then
+            message2 = "I love going on vacation over the summer"
+        Else
+            message2 = "I love playing games and sports in the summer"
+        End If
+        SpeakString(message2, -2, 100, True)
+    End Sub
+
+    Private Sub SummerCont1_Click(sender As Object, e As EventArgs) Handles SummerCont1.Click
+        Dim message1, message2 As String
+        message1 = SummerBox.Text
+        If message1 = "pool" Then
+            message2 = "I can't really swim, but I love sitting on a pool float and floating around in the water"
+        ElseIf message1 = "ice cream" Then
+            message2 = "I really love any kind of chocolate flavors.  Plain chocolate is probably my favorite"
+        ElseIf message1 = "vacation" Then
+            message2 = "One day, I really want to go to Hawaii!"
+        Else
+            message2 = "I love soccer.  It's a really cool sport. And fun to watch!"
+        End If
+        SpeakString(message2, -2, 100, True)
+    End Sub
+
+    Private Sub SummerCont2_Click(sender As Object, e As EventArgs) Handles SummerCont2.Click
+        Dim message1, message2 As String
+        message1 = SummerBox.Text
+        If message1 = "pool" Then
+            message2 = "You always have to be careful, though, and make sure there are no thunderstorms before you decide to go in the pool!"
+        ElseIf message1 = "ice cream" Then
+            message2 = "Oh, and I love ice cream in cones with sprinkles on top.  Sprinkles make everything better!"
+        ElseIf message1 = "vacation" Then
+            message2 = "I'm kind of scared of planes, but travelling is really fun"
+        Else
+            message2 = "It's really nice not having homework in the summer and just being able to play!"
+        End If
+        SpeakString(message2, -2, 100, True)
+    End Sub
+#End Region
+
+#Region "Favorites"
+    Private Sub FaveAsk_Click(sender As Object, e As EventArgs) Handles FaveAsk.Click
+        Dim message1 As String
+        message1 = FaveBox.Text
+        If Not String.IsNullOrEmpty(message1) Then
+            SpeakString("What is your favorite" + message1, -2, 100, True)
+        End If
+    End Sub
+    Private Sub FaveAns_Click(sender As Object, e As EventArgs) Handles FaveAns.Click
+        Dim message1, message2 As String
+        message1 = FaveBox.Text
+        If message1 = "animal" Then
+            message2 = "the lion"
+        ElseIf message1 = "book" Then
+            message2 = "Charlie and the Chocolate Factory"
+        ElseIf message1 = "color" Then
+            message2 = "green"
+        ElseIf message1 = "flavor" Then
+            message2 = "chocolate"
+        ElseIf message1 = "food" Then
+            message2 = "cake"
+        ElseIf message1 = "game" Then
+            message2 = "Super Mario Bros."
+        ElseIf message1 = "movie" Then
+            message2 = "Wall-E"
+        ElseIf message1 = "sport" Then
+            message2 = "soccer"
+        ElseIf message1 = "TV show" Then
+            message2 = "Phineas and Ferb"
+        ElseIf message1 = "part of school" Then
+            message2 = "recess"
+        ElseIf message1 = "part of summer" Then
+            message2 = "eating a lot of ice cream"
+        End If
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString("My favorite " + message1 + " is " + message2, -2, 100, True)
+        End If
+    End Sub
+    Private Sub FaveAnsCont_Click(sender As Object, e As EventArgs) Handles FaveAnsCont.Click
+        Dim message1 As String = FaveBox.Text
+        Dim message2 As String
+        If message1 = "animal" Then
+            message2 = "I love lions' roars!"
+        ElseIf message1 = "book" Then
+            message2 = "I love chocolate!"
+        ElseIf message1 = "color" Then
+            message2 = "My favorite character in Super Mario Bros is Luigi and he has a green cap"
+        ElseIf message1 = "flavor" Then
+            message2 = "I could eat chocolate for any meal!"
+        ElseIf message1 = "food" Then
+            message2 = "Chocolate cake's the best!"
+        ElseIf message1 = "game" Then
+            message2 = "I just love Luigi"
+        ElseIf message1 = "movie" Then
+            message2 = "It's about robots, like me!"
+        ElseIf message1 = "sport" Then
+            message2 = "It's the greatest sport in the world.  But did you know they call it football in other countries?"
+        ElseIf message1 = "TV show" Then
+            message2 = "I never want summer to end!"
+        ElseIf message1 = "part of school" Then
+            message2 = "It's the most relaxing part of the day since it's so fun!"
+        ElseIf message1 = "part of summer" Then
+            message2 = "Ice cream is the greatest on a hot summer day!"
+        End If
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
+    End Sub
+#End Region
+
+#Region "Conversation"
+    Private Sub ConvoAsk_Click(sender As Object, e As EventArgs) Handles ConvoAsk.Click
+        Dim message1, message2 As String
+        message1 = ConvoBox.Text
+        If message1 = "Like to do at home?" Then
+            message2 = "What do you like to do at home?"
+        ElseIf message1 = "Best gift ever given to you?" Then
+            message2 = "What was the best gift you ever received?"
+        ElseIf message1 = "Favorite place in world?" Then
+            message2 = "What is your favorite place in the world?"
+        ElseIf message1 = "If could invent something, what?" Then
+            message2 = "If you could invent something, what would it be?"
+        ElseIf message1 = "Funniest thing that happened?" Then
+            message2 = "What is the funniest thing that ever happened to you?"
+        ElseIf message1 = "Imagine the future..." Then
+            message2 = "What do you think the future will be like?"
+        ElseIf message1 = "If could be animal, which one?" Then
+            message2 = "If you could be an animal, which one would you be?"
+        ElseIf message1 = "What want to be when grow up?" Then
+            message2 = "If you could be anything you want to be when you grow up, what would it be?"
+        End If
+        If Not String.IsNullOrEmpty(message1) Then
+            SpeakString(message2, -2, 100, True)
+        End If
+    End Sub
+    Private Sub ConvoAns_Click(sender As Object, e As EventArgs) Handles ConvoAns.Click
+        Dim message1, message2 As String
+        message1 = ConvoBox.Text
+        If message1 = "Like to do at home?" Then
+            message2 = "I like playing video games and reading"
+        ElseIf message1 = "Best gift ever given to you?" Then
+            message2 = "The best gift I ever received was a robot, like me, called Room-ba.  It vacuums your room for you so you don't have to!"
+        ElseIf message1 = "Favorite place in world?" Then
+            message2 = "My favorite place is New Zealand.  It's the most beautiful place in the world!"
+        ElseIf message1 = "If could invent something, what?" Then
+            message2 = "I would invent a machine that would give you whatever food you want at the click of a button! I just love food"
+        ElseIf message1 = "Funniest thing that happened?" Then
+            message2 = "Well it didn't really happen to me, but I have a friend who's from a different country, so when she first moved to America, she didn't really understand English too well.  And our teacher wanted us to write about the Superbowl.  And she didn't know that the Superbowl was a football game since she's not from America.  She thought she was supposed to write about a bowl that was super.  So she created an entire story about a bowl with magical powers.  And she was the first one to volunteer to read her paper the next day, so we were all cracking up when she read it out loud because she had no idea that the Superbowl is about football!"
+        ElseIf message1 = "Imagine the future..." Then
+            message2 = "I think the future will be really cool and there will be lots of robots like me! And the robots will do all sorts of stuff for the humans, so they don't have to!"
+        ElseIf message1 = "If could be animal, which one?" Then
+            message2 = "If I could be an animal, I'd be a bird because I think it would be so cool to fly!"
+        ElseIf message1 = "What want to be when grow up?" Then
+            message2 = "When I grow up, I think I want to be a doctor!  It's pretty cool to cure sick people!"
+        End If
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
+    End Sub
+    Private Sub TellMore_Click(sender As Object, e As EventArgs) Handles TellMore.Click
+        SpeakString("Tell me more!", -2, 100, True)
+    End Sub
+
+    Private Sub Why_Click(sender As Object, e As EventArgs) Handles Why.Click
+        SpeakString("Why", -2, 100, True)
+    End Sub
+
+#End Region
     'Private Sub Yawn_Click(sender As Object, e As EventArgs) Handles Yawn.Click
     '    Timer1.Enabled = False
     '    SerialPort1.Open()
