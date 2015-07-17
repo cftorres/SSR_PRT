@@ -160,7 +160,6 @@ Partial Class Form1
         Me.SummerCont2 = New System.Windows.Forms.Button()
         Me.SummerBox = New System.Windows.Forms.ComboBox()
         Me.ConvoBox = New System.Windows.Forms.ComboBox()
-        Me.Label27 = New System.Windows.Forms.Label()
         Me.FaveBox = New System.Windows.Forms.ComboBox()
         Me.ConvoAns = New System.Windows.Forms.Button()
         Me.FaveAns = New System.Windows.Forms.Button()
@@ -168,10 +167,9 @@ Partial Class Form1
         Me.TellMore = New System.Windows.Forms.Button()
         Me.Why = New System.Windows.Forms.Button()
         Me.Label19 = New System.Windows.Forms.Label()
-        Me.FaveCont = New System.Windows.Forms.Button()
-        Me.Fave = New System.Windows.Forms.ComboBox()
-        Me.FaveLabel1 = New System.Windows.Forms.Label()
         Me.AboutYrslf = New System.Windows.Forms.Button()
+        Me.ConvoAsk = New System.Windows.Forms.Button()
+        Me.FaveAsk = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Button1
@@ -289,7 +287,7 @@ Partial Class Form1
         Me.StopButton.BackColor = System.Drawing.Color.Red
         Me.StopButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.StopButton.ForeColor = System.Drawing.Color.White
-        Me.StopButton.Location = New System.Drawing.Point(803, 507)
+        Me.StopButton.Location = New System.Drawing.Point(803, 502)
         Me.StopButton.Margin = New System.Windows.Forms.Padding(0)
         Me.StopButton.Name = "StopButton"
         Me.StopButton.Size = New System.Drawing.Size(194, 46)
@@ -611,7 +609,7 @@ Partial Class Form1
         Me.Pause.BackColor = System.Drawing.Color.Gold
         Me.Pause.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Pause.ForeColor = System.Drawing.Color.White
-        Me.Pause.Location = New System.Drawing.Point(803, 457)
+        Me.Pause.Location = New System.Drawing.Point(803, 452)
         Me.Pause.Margin = New System.Windows.Forms.Padding(0)
         Me.Pause.Name = "Pause"
         Me.Pause.Size = New System.Drawing.Size(88, 40)
@@ -624,7 +622,7 @@ Partial Class Form1
         Me.ResumeButton.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(0, Byte), Integer))
         Me.ResumeButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ResumeButton.ForeColor = System.Drawing.Color.White
-        Me.ResumeButton.Location = New System.Drawing.Point(904, 457)
+        Me.ResumeButton.Location = New System.Drawing.Point(904, 452)
         Me.ResumeButton.Margin = New System.Windows.Forms.Padding(0)
         Me.ResumeButton.Name = "ResumeButton"
         Me.ResumeButton.Size = New System.Drawing.Size(94, 40)
@@ -636,7 +634,7 @@ Partial Class Form1
         '
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label7.Location = New System.Drawing.Point(832, 431)
+        Me.Label7.Location = New System.Drawing.Point(834, 431)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(127, 13)
         Me.Label7.TabIndex = 193
@@ -1200,9 +1198,9 @@ Partial Class Form1
         Me.Label26.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label26.Location = New System.Drawing.Point(263, 554)
         Me.Label26.Name = "Label26"
-        Me.Label26.Size = New System.Drawing.Size(76, 13)
+        Me.Label26.Size = New System.Drawing.Size(176, 13)
         Me.Label26.TabIndex = 329
-        Me.Label26.Text = "FAVORITES"
+        Me.Label26.Text = "WHAT IS YOUR FAVORITE..."
         '
         'Label20
         '
@@ -1482,17 +1480,8 @@ Partial Class Form1
         Me.ConvoBox.Items.AddRange(New Object() {"Like to do at home?", "Best gift ever given to you?", "Favorite place in world?", "If could invent something, what?", "Funniest thing that happened?", "Imagine the future...", "If could be animal, which one?", "What want to be when grow up?"})
         Me.ConvoBox.Location = New System.Drawing.Point(266, 455)
         Me.ConvoBox.Name = "ConvoBox"
-        Me.ConvoBox.Size = New System.Drawing.Size(216, 21)
+        Me.ConvoBox.Size = New System.Drawing.Size(158, 21)
         Me.ConvoBox.TabIndex = 321
-        '
-        'Label27
-        '
-        Me.Label27.AutoSize = True
-        Me.Label27.Location = New System.Drawing.Point(263, 577)
-        Me.Label27.Name = "Label27"
-        Me.Label27.Size = New System.Drawing.Size(119, 13)
-        Me.Label27.TabIndex = 322
-        Me.Label27.Text = "What is your favorite...?"
         '
         'FaveBox
         '
@@ -1501,9 +1490,9 @@ Partial Class Form1
         Me.FaveBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.FaveBox.FormattingEnabled = True
         Me.FaveBox.Items.AddRange(New Object() {"animal", "book", "color", "flavor", "food", "game", "movie", "TV show", "part of school", "part of summer"})
-        Me.FaveBox.Location = New System.Drawing.Point(387, 571)
+        Me.FaveBox.Location = New System.Drawing.Point(266, 571)
         Me.FaveBox.Name = "FaveBox"
-        Me.FaveBox.Size = New System.Drawing.Size(95, 21)
+        Me.FaveBox.Size = New System.Drawing.Size(158, 21)
         Me.FaveBox.TabIndex = 323
         '
         'ConvoAns
@@ -1519,7 +1508,7 @@ Partial Class Form1
         '
         Me.FaveAns.Location = New System.Drawing.Point(266, 598)
         Me.FaveAns.Name = "FaveAns"
-        Me.FaveAns.Size = New System.Drawing.Size(152, 23)
+        Me.FaveAns.Size = New System.Drawing.Size(158, 23)
         Me.FaveAns.TabIndex = 325
         Me.FaveAns.Text = "My answer"
         Me.FaveAns.UseVisualStyleBackColor = True
@@ -1561,37 +1550,6 @@ Partial Class Form1
         Me.Label19.TabIndex = 267
         Me.Label19.Text = "NAME"
         '
-        'FaveCont
-        '
-        Me.FaveCont.Location = New System.Drawing.Point(941, 358)
-        Me.FaveCont.Margin = New System.Windows.Forms.Padding(2)
-        Me.FaveCont.Name = "FaveCont"
-        Me.FaveCont.Size = New System.Drawing.Size(50, 20)
-        Me.FaveCont.TabIndex = 211
-        Me.FaveCont.Text = "(cont'd)"
-        Me.FaveCont.UseVisualStyleBackColor = True
-        '
-        'Fave
-        '
-        Me.Fave.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest
-        Me.Fave.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
-        Me.Fave.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.Fave.FormattingEnabled = True
-        Me.Fave.Items.AddRange(New Object() {"animal", "book", "color", "flavor", "food", "game", "movie", "TV show"})
-        Me.Fave.Location = New System.Drawing.Point(851, 358)
-        Me.Fave.Name = "Fave"
-        Me.Fave.Size = New System.Drawing.Size(84, 21)
-        Me.Fave.TabIndex = 210
-        '
-        'FaveLabel1
-        '
-        Me.FaveLabel1.AutoSize = True
-        Me.FaveLabel1.Location = New System.Drawing.Point(791, 362)
-        Me.FaveLabel1.Name = "FaveLabel1"
-        Me.FaveLabel1.Size = New System.Drawing.Size(59, 13)
-        Me.FaveLabel1.TabIndex = 209
-        Me.FaveLabel1.Text = "My favorite"
-        '
         'AboutYrslf
         '
         Me.AboutYrslf.Location = New System.Drawing.Point(599, 235)
@@ -1602,11 +1560,31 @@ Partial Class Form1
         Me.AboutYrslf.Text = "Tell me about yourself"
         Me.AboutYrslf.UseVisualStyleBackColor = True
         '
+        'ConvoAsk
+        '
+        Me.ConvoAsk.Location = New System.Drawing.Point(430, 454)
+        Me.ConvoAsk.Name = "ConvoAsk"
+        Me.ConvoAsk.Size = New System.Drawing.Size(52, 24)
+        Me.ConvoAsk.TabIndex = 331
+        Me.ConvoAsk.Text = "Ask"
+        Me.ConvoAsk.UseVisualStyleBackColor = True
+        '
+        'FaveAsk
+        '
+        Me.FaveAsk.Location = New System.Drawing.Point(430, 570)
+        Me.FaveAsk.Name = "FaveAsk"
+        Me.FaveAsk.Size = New System.Drawing.Size(52, 24)
+        Me.FaveAsk.TabIndex = 332
+        Me.FaveAsk.Text = "Ask"
+        Me.FaveAsk.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1019, 634)
+        Me.ClientSize = New System.Drawing.Size(1019, 643)
+        Me.Controls.Add(Me.FaveAsk)
+        Me.Controls.Add(Me.ConvoAsk)
         Me.Controls.Add(Me.AboutYrslf)
         Me.Controls.Add(Me.Label26)
         Me.Controls.Add(Me.Why)
@@ -1615,7 +1593,6 @@ Partial Class Form1
         Me.Controls.Add(Me.FaveAns)
         Me.Controls.Add(Me.ConvoAns)
         Me.Controls.Add(Me.FaveBox)
-        Me.Controls.Add(Me.Label27)
         Me.Controls.Add(Me.ConvoBox)
         Me.Controls.Add(Me.SummerBox)
         Me.Controls.Add(Me.SummerCont2)
@@ -1688,9 +1665,6 @@ Partial Class Form1
         Me.Controls.Add(Me.ImSleepy1)
         Me.Controls.Add(Me.Zoo1)
         Me.Controls.Add(Me.Label12)
-        Me.Controls.Add(Me.FaveCont)
-        Me.Controls.Add(Me.Fave)
-        Me.Controls.Add(Me.FaveLabel1)
         Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.DontLikeClear)
         Me.Controls.Add(Me.DontLikeBox)
@@ -1893,7 +1867,6 @@ Partial Class Form1
     Friend WithEvents SummerCont2 As System.Windows.Forms.Button
     Friend WithEvents SummerBox As System.Windows.Forms.ComboBox
     Friend WithEvents ConvoBox As System.Windows.Forms.ComboBox
-    Friend WithEvents Label27 As System.Windows.Forms.Label
     Friend WithEvents FaveBox As System.Windows.Forms.ComboBox
     Friend WithEvents ConvoAns As System.Windows.Forms.Button
     Friend WithEvents FaveAns As System.Windows.Forms.Button
@@ -1901,9 +1874,8 @@ Partial Class Form1
     Friend WithEvents TellMore As System.Windows.Forms.Button
     Friend WithEvents Why As System.Windows.Forms.Button
     Friend WithEvents Label19 As System.Windows.Forms.Label
-    Friend WithEvents FaveCont As System.Windows.Forms.Button
-    Friend WithEvents Fave As System.Windows.Forms.ComboBox
-    Friend WithEvents FaveLabel1 As System.Windows.Forms.Label
     Friend WithEvents AboutYrslf As System.Windows.Forms.Button
+    Friend WithEvents ConvoAsk As System.Windows.Forms.Button
+    Friend WithEvents FaveAsk As System.Windows.Forms.Button
 
 End Class
