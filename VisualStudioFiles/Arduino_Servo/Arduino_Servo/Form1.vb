@@ -713,36 +713,6 @@ Public Class Form1
         DontLikeBox.Clear()
     End Sub
 
-    Private Sub FaveSelect_Click(sender As Object, e As EventArgs) Handles Fave.SelectedIndexChanged
-        TellFavorite(Fave.Text)
-    End Sub
-
-    Private Sub FaveClear_Click(sender As Object, e As EventArgs) Handles FaveCont.Click
-        Dim message1 As String = Fave.Text
-        Dim message2 As String
-        If message1 = "animal" Then
-            message2 = "I love lions' roars!"
-        ElseIf message1 = "book" Then
-            message2 = "I love chocolate!"
-        ElseIf message1 = "color" Then
-            message2 = "My favorite character in Super Mario Bros is Luigi and he has a green cap"
-        ElseIf message1 = "flavor" Then
-            message2 = "I could eat chocolate for any meal!"
-        ElseIf message1 = "food" Then
-            message2 = "Chocolate cake's the best!"
-        ElseIf message1 = "game" Then
-            message2 = "I just love Luigi"
-        ElseIf message1 = "movie" Then
-            message2 = "It's about robots, like me!"
-        ElseIf message1 = "sport" Then
-            message2 =
-                "It's the greatest sport in the world.  But did you know they call it football in other countries?"
-        Else
-            message2 = "I never want summer to end!"
-        End If
-        SpeakString(message2)
-    End Sub
-
 #End Region
 
 #Region "Conversation Repair"
@@ -1495,12 +1465,13 @@ Public Class Form1
 #End Region
 
 #Region "Favorites"
-    Private Sub FaveBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FaveBox.SelectedIndexChanged
+    Private Sub FaveAsk_Click(sender As Object, e As EventArgs) Handles FaveAsk.Click
         Dim message1 As String
         message1 = FaveBox.Text
-        SpeakString("What is your favorite" + message1, -2, 100, True)
+        If Not String.IsNullOrEmpty(message1) Then
+            SpeakString("What is your favorite" + message1, -2, 100, True)
+        End If
     End Sub
-
     Private Sub FaveAns_Click(sender As Object, e As EventArgs) Handles FaveAns.Click
         Dim message1, message2 As String
         message1 = FaveBox.Text
@@ -1531,7 +1502,6 @@ Public Class Form1
             SpeakString("My favorite " + message1 + " is " + message2, -2, 100, True)
         End If
     End Sub
-
     Private Sub FaveAnsCont_Click(sender As Object, e As EventArgs) Handles FaveAnsCont.Click
         Dim message1 As String = FaveBox.Text
         Dim message2 As String
@@ -1565,7 +1535,7 @@ Public Class Form1
 #End Region
 
 #Region "Conversation"
-    Private Sub ConvoBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ConvoBox.SelectedIndexChanged
+    Private Sub ConvoAsk_Click(sender As Object, e As EventArgs) Handles ConvoAsk.Click
         Dim message1, message2 As String
         message1 = ConvoBox.Text
         If message1 = "Like to do at home?" Then
@@ -1585,9 +1555,10 @@ Public Class Form1
         ElseIf message1 = "What want to be when grow up?" Then
             message2 = "If you could be anything you want to be when you grow up, what would it be?"
         End If
-        SpeakString(message2, -2, 100, True)
+        If Not String.IsNullOrEmpty(message1) Then
+            SpeakString(message2, -2, 100, True)
+        End If
     End Sub
-
     Private Sub ConvoAns_Click(sender As Object, e As EventArgs) Handles ConvoAns.Click
         Dim message1, message2 As String
         message1 = ConvoBox.Text
