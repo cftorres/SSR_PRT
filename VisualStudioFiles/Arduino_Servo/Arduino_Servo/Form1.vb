@@ -802,7 +802,7 @@ Public Class Form1
             message2 = "This weekend was my friend Charlie's birthday.  He had an awesome birthday party"
         ElseIf message1 = "lego" Then
             message2 = "This weekend I played with legos"
-        Else
+        ElseIf message1 = "video games" Then
             message2 = "This weekend I played some video games."
         End If
         SpeakString(message2, -2, 100, True)
@@ -816,10 +816,12 @@ Public Class Form1
             message2 = "We played some fun games and there was a cool robot dance"
         ElseIf message1 = "lego" Then
             message2 = "I built a really cool tower.  Next time I'm gonna build one so tall, it's going to be taller than this table!"
-        Else
+        ElseIf message1 = "video games" Then
             message2 = "I played Mario Cart and beat my high score and made it to the next level!"
         End If
-        SpeakString(message2, -2, 100, True)
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
     End Sub
     Private Sub WkndCont2_Click(sender As Object, e As EventArgs) Handles WkndCont2.Click
         Dim message1 As String = WkndBox.Text
@@ -830,10 +832,12 @@ Public Class Form1
             message2 = "I ate really good cake at the party too!"
         ElseIf message1 = "lego" Then
             message2 = "Legos are really fun because you can build anything you want!"
-        Else
+        ElseIf message1 = "video games" Then
             message2 = "I love playing racing games. I wish I could watch a car race in real life!"
         End If
-        SpeakString(message2, -2, 100, True)
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
     End Sub
 #End Region
 
@@ -1432,7 +1436,7 @@ Public Class Form1
         ElseIf message1 = "school's okay" Then
             message2 = "Sometimes it can be a little boring, but mostly it's not bad"
         End If
-        If String.IsNullOrEmpty(message2) Then
+        If Not String.IsNullOrEmpty(message2) Then
             SpeakString(message2, -2, 100, True)
         End If
     End Sub
@@ -1451,7 +1455,7 @@ Public Class Form1
         ElseIf message1 = "school's okay" Then
             message2 = "Homework is the most annoying part, but learning is fun. I want to be really smart one day!"
         End If
-        If String.IsNullOrEmpty(message2) Then
+        If Not String.IsNullOrEmpty(message2) Then
             SpeakString(message2, -2, 100, True)
         End If
     End Sub
@@ -1470,7 +1474,7 @@ Public Class Form1
             message2 = "My favorite part about summer is eating a lot of ice cream"
         ElseIf message1 = "vacation" Then
             message2 = "I love going on vacation over the summer"
-        Else
+        ElseIf message1 = "playing" Then
             message2 = "I love playing games and sports in the summer"
         End If
         SpeakString(message2, -2, 100, True)
@@ -1485,10 +1489,12 @@ Public Class Form1
             message2 = "I really love any kind of chocolate flavors.  Plain chocolate is probably my favorite"
         ElseIf message1 = "vacation" Then
             message2 = "One day, I really want to go to Hawaii!"
-        Else
+        ElseIf message1 = "playing" Then
             message2 = "I love soccer.  It's a really cool sport. And fun to watch!"
         End If
-        SpeakString(message2, -2, 100, True)
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
     End Sub
 
     Private Sub SummerCont2_Click(sender As Object, e As EventArgs) Handles SummerCont2.Click
@@ -1500,10 +1506,12 @@ Public Class Form1
             message2 = "Oh, and I love ice cream in cones with sprinkles on top.  Sprinkles make everything better!"
         ElseIf message1 = "vacation" Then
             message2 = "I'm kind of scared of planes, but travelling is really fun"
-        Else
+        ElseIf message1 = "playing" Then
             message2 = "It's really nice not having homework in the summer and just being able to play!"
         End If
-        SpeakString(message2, -2, 100, True)
+        If Not String.IsNullOrEmpty(message2) Then
+            SpeakString(message2, -2, 100, True)
+        End If
     End Sub
 #End Region
 
